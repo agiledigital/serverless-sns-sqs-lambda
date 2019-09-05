@@ -1,0 +1,68 @@
+service: sns-sqs-service
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: ap-southeast-2
+  stage: ${opt:stage, 'dev'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: "*"
+
+custom:
+  resourceNamePrefix: ${self:provider.stage}-${self:service}-
+  topicArn: !Ref Topic
+
+functions:
+  processEvent:
+    handler: handler.handler
+    events:
+      - sqs:
+          arn: !GetAtt EventQueue.Arn
+
+resources:
+  Resources:
+    Topic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: TestTopic
+
+    # to remove with plugin
+    EventDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.resourceNamePrefix}EventDeadLetterQueue
+    EventQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.resourceNamePrefix}EventQueue
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt EventDeadLetterQueue.Arn
+          maxReceiveCount: 5
+    EventQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Version: "2012-10-17"
+          Id: ${self:provider.stage}EventQueue
+          Statement:
+            - Sid: Sid${self:provider.stage}EventQueue
+              Effect: Allow
+              Principal:
+                AWS: "*"
+              Action: SQS:SendMessage
+              Resource: !GetAtt EventQueue.Arn
+              Condition:
+                ArnEquals:
+                  aws:SourceArn:
+                    - ${self:custom.topicArn}
+        Queues:
+          - Ref: EventQueue
+    SubscribeEventTopic:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: !GetAtt EventQueue.Arn
+        Protocol: sqs
+        TopicArn: ${self:custom.topicArn}

@@ -1,0 +1,18 @@
+@startuml
+
+!define AWSPUML https://raw.githubusercontent.com/milo-minderbinder/AWS-PlantUML/release/18-2-22/dist
+!includeurl AWSPUML/common.puml
+!includeurl AWSPUML/Messaging/AmazonSNS/AmazonSNS.puml
+!includeurl AWSPUML/Messaging/AmazonSQS/AmazonSQS.puml
+!includeurl AWSPUML/Compute/AWSLambda/AWSLambda.puml
+
+AWSLAMBDA(lambda, 'Event Source')
+AMAZONSNS(sns,'Event Topic')
+AMAZONSQS(sqs,'Event  Queue')
+AWSLAMBDA(lambdaEnd, 'Event Handler')
+
+
+lambda -> sns
+sns -> sqs
+sqs -> lambdaEnd
+@enduml

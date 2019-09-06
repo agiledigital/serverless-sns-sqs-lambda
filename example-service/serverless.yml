@@ -7,7 +7,6 @@ provider:
   stage: ${opt:stage, 'dev'}
 
 custom:
-  resourceNamePrefix: ${self:provider.stage}-${self:service}-
   topicArn: !Ref Topic
 
 functions:
@@ -19,6 +18,10 @@ functions:
           topicArn: ${self:custom.topicArn}
           batchSize: 2
           maxRetryCount: 2
+          filterPolicy:
+            pet:
+              - dog
+              - cat
 
 resources:
   Resources:

@@ -1,0 +1,34 @@
+service: sns-sqs-service
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: ap-southeast-2
+  stage: ${opt:stage, 'dev'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: "*"
+
+custom:
+  resourceNamePrefix: ${self:provider.stage}-${self:service}-
+  topicArn: !Ref Topic
+
+functions:
+  processEvent:
+    handler: handler.handler
+    events:
+      - snsSqs:
+          name: Event
+          topicArn: ${self:custom.topicArn}
+
+resources:
+  Resources:
+    Topic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: TestTopic
+
+plugins:
+  - ../../lib/serverless-sns-sqs-lambda.js

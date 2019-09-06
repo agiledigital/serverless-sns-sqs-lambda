@@ -1,8 +1,8 @@
 {
   "name": "serverless-sns-sqs-lambda",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
-  "main": "index.js",
+  "main": "lib/serverless-sns-sqs-lambda.js",
   "scripts": {
     "test": "test"
   },

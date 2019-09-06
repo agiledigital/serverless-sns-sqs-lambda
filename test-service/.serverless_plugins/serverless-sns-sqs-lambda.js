@@ -69,12 +69,16 @@ module.exports = class ServerlessSnsSqsLambda {
       if (func.events) {
         func.events.forEach(event => {
           if (event.snsSqs) {
+            if (this.options.verbose) {
+              console.info(
+                `Adding snsSqs event handler [${JSON.stringify(event.snsSqs)}]`
+              );
+            }
             this.addSnsSqsResources(template, funcKey, stage, event.snsSqs);
           }
         });
       }
     });
-    console.dir(template, { depth: null });
   }
 
   /**

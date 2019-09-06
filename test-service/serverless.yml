@@ -17,6 +17,8 @@ functions:
       - snsSqs:
           name: Other
           topicArn: ${self:custom.topicArn}
+          batchSize: 2
+          maxRetryCount: 2
 
 resources:
   Resources:

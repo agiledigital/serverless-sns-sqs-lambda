@@ -38,10 +38,14 @@ functions:
     handler: handler.handler
     events:
       - snsSqs:
-          name: TestEvent      # Required - choose a name for the event queue
+          name: TestEvent      # Optional - choose a name for the event queue
           topicArn: !Ref Topic # Required - SNS topic to subscribe to
           batchSize: 2         # Optional - default value is 10
           maxRetryCount: 2     # Optional - default value is 5
+          filterPolicy:        # Optional - filter messages that are handled
+            pets:
+              - dog
+              - cat
 
 resources:
   Resources:

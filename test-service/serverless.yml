@@ -21,6 +21,8 @@ functions:
     events:
       - sqs:
           arn: !GetAtt EventQueue.Arn
+      - snsSqs:
+          topicName: ${self:custom.topicArn}
 
 resources:
   Resources:

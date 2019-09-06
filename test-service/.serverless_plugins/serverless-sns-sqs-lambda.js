@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = class LambdaEdge {
+module.exports = class ServerlessSnsSqsLambda {
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
@@ -19,9 +19,19 @@ module.exports = class LambdaEdge {
   }
 
   modifyTemplate() {
-    const template = this.serverless.service.provider
-      .compiledCloudFormationTemplate;
+    const functions = this.serverless.service.functions;
 
-    console.dir(template, { depth: null });
+    Object.keys(functions).forEach(funcKey => {
+      const func = functions[funcKey];
+      if (func.events) {
+        func.events.forEach(event => {
+          if (event.snsSqs) {
+            console.log(`${funcKey} has an snsSqsEvent`);
+            console.dir(event.snsSqs, { depth: null });
+          }
+        });
+      }
+    });
+    process.exit(1);
   }
 };

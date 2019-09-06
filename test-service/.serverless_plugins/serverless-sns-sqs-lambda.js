@@ -20,18 +20,104 @@ module.exports = class ServerlessSnsSqsLambda {
 
   modifyTemplate() {
     const functions = this.serverless.service.functions;
+    const template = this.serverless.service.provider
+      .compiledCloudFormationTemplate;
 
     Object.keys(functions).forEach(funcKey => {
       const func = functions[funcKey];
       if (func.events) {
         func.events.forEach(event => {
           if (event.snsSqs) {
-            console.log(`${funcKey} has an snsSqsEvent`);
-            console.dir(event.snsSqs, { depth: null });
+            this.addSnsSqsEvent(template, funcKey, event.snsSqs);
           }
         });
       }
     });
-    process.exit(1);
+    console.dir(template, { depth: null });
+  }
+
+  addSnsSqsEvent(template, funcName, options) {
+    console.log(options);
+    const funcNamePascalCase =
+      funcName.slice(0, 1).toUpperCase() + funcName.slice(1);
+    options = {
+      funcName: funcNamePascalCase,
+      ...options
+    };
+
+    this.addEventSourceMapping(template, options);
+    this.addEventDeadLetterQueue(template, options);
+    this.addEventQueue(template, options);
+    this.addEventQueuePolicy(template, options);
+    this.addTopicSubscription(template, options);
+  }
+
+  addEventSourceMapping(template, { funcName, name }) {
+    template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
+      Type: "AWS::Lambda::EventSourceMapping",
+      DependsOn: "IamRoleLambdaExecution",
+      Properties: {
+        BatchSize: 10,
+        EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
+        FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
+        Enabled: "True"
+      }
+    };
+  }
+
+  addEventDeadLetterQueue(template, { name, funcName }) {
+    template.Resources[`${name}DeadLetterQueue`] = {
+      Type: "AWS::SQS::Queue",
+      Properties: { QueueName: `${funcName}${name}DeadLetterQueue` }
+    };
+  }
+
+  addEventQueue(template, { name, funcName }) {
+    template.Resources[`${name}Queue`] = {
+      Type: "AWS::SQS::Queue",
+      Properties: {
+        QueueName: `${funcName}${name}Queue`,
+        RedrivePolicy: {
+          deadLetterTargetArn: {
+            "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
+          },
+          maxReceiveCount: 5
+        }
+      }
+    };
+  }
+
+  addEventQueuePolicy(template, { name, funcName, topicArn }) {
+    template.Resources[`${name}QueuePolicy`] = {
+      Type: "AWS::SQS::QueuePolicy",
+      Properties: {
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Id: `${funcName}${name}Queue`,
+          Statement: [
+            {
+              Sid: `${funcName}${name}Sid`,
+              Effect: "Allow",
+              Principal: { AWS: "*" },
+              Action: "SQS:SendMessage",
+              Resource: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
+              Condition: { ArnEquals: { "aws:SourceArn": [topicArn] } }
+            }
+          ]
+        },
+        Queues: [{ Ref: `${name}Queue` }]
+      }
+    };
+  }
+
+  addTopicSubscription(template, { name, topicArn }) {
+    template.Resources[`Subscribe${name}Topic`] = {
+      Type: "AWS::SNS::Subscription",
+      Properties: {
+        Endpoint: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
+        Protocol: "sqs",
+        TopicArn: topicArn
+      }
+    };
   }
 };

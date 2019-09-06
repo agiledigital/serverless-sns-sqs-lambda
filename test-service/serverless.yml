@@ -19,10 +19,9 @@ functions:
   processEvent:
     handler: handler.handler
     events:
-      - sqs:
-          arn: !GetAtt EventQueue.Arn
       - snsSqs:
-          topicName: ${self:custom.topicArn}
+          name: Event
+          topicArn: ${self:custom.topicArn}
 
 resources:
   Resources:
@@ -30,44 +29,43 @@ resources:
       Type: AWS::SNS::Topic
       Properties:
         TopicName: TestTopic
-
     # to remove with plugin
-    EventDeadLetterQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: ${self:custom.resourceNamePrefix}EventDeadLetterQueue
-    EventQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: ${self:custom.resourceNamePrefix}EventQueue
-        RedrivePolicy:
-          deadLetterTargetArn: !GetAtt EventDeadLetterQueue.Arn
-          maxReceiveCount: 5
-    EventQueuePolicy:
-      Type: AWS::SQS::QueuePolicy
-      Properties:
-        PolicyDocument:
-          Version: "2012-10-17"
-          Id: ${self:provider.stage}EventQueue
-          Statement:
-            - Sid: Sid${self:provider.stage}EventQueue
-              Effect: Allow
-              Principal:
-                AWS: "*"
-              Action: SQS:SendMessage
-              Resource: !GetAtt EventQueue.Arn
-              Condition:
-                ArnEquals:
-                  aws:SourceArn:
-                    - ${self:custom.topicArn}
-        Queues:
-          - Ref: EventQueue
-    SubscribeEventTopic:
-      Type: AWS::SNS::Subscription
-      Properties:
-        Endpoint: !GetAtt EventQueue.Arn
-        Protocol: sqs
-        TopicArn: ${self:custom.topicArn}
+    # EventDeadLetterQueue:
+    #   Type: AWS::SQS::Queue
+    #   Properties:
+    #     QueueName: ${self:custom.resourceNamePrefix}EventDeadLetterQueue
+    # EventQueue:
+    #   Type: AWS::SQS::Queue
+    #   Properties:
+    #     QueueName: ${self:custom.resourceNamePrefix}EventQueue
+    #     RedrivePolicy:
+    #       deadLetterTargetArn: !GetAtt EventDeadLetterQueue.Arn
+    #       maxReceiveCount: 5
+    # EventQueuePolicy:
+    #   Type: AWS::SQS::QueuePolicy
+    #   Properties:
+    #     PolicyDocument:
+    #       Version: "2012-10-17"
+    #       Id: ${self:provider.stage}EventQueue
+    #       Statement:
+    #         - Sid: Sid${self:provider.stage}EventQueue
+    #           Effect: Allow
+    #           Principal:
+    #             AWS: "*"
+    #           Action: SQS:SendMessage
+    #           Resource: !GetAtt EventQueue.Arn
+    #           Condition:
+    #             ArnEquals:
+    #               aws:SourceArn:
+    #                 - ${self:custom.topicArn}
+    #     Queues:
+    #       - Ref: EventQueue
+    # SubscribeEventTopic:
+    #   Type: AWS::SNS::Subscription
+    #   Properties:
+    #     Endpoint: !GetAtt EventQueue.Arn
+    #     Protocol: sqs
+    #     TopicArn: ${self:custom.topicArn}
 
 plugins:
   - serverless-sns-sqs-lambda

@@ -23,12 +23,5 @@ functions:
           name: Event
           topicArn: ${self:custom.topicArn}
 
-resources:
-  Resources:
-    Topic:
-      Type: AWS::SNS::Topic
-      Properties:
-        TopicName: TestTopic
-
 plugins:
   - ../../lib/serverless-sns-sqs-lambda.js

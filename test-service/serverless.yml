@@ -5,11 +5,6 @@ provider:
   runtime: nodejs10.x
   region: ap-southeast-2
   stage: ${opt:stage, 'dev'}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - sqs:*
-      Resource: "*"
 
 custom:
   resourceNamePrefix: ${self:provider.stage}-${self:service}-
@@ -20,7 +15,7 @@ functions:
     handler: handler.handler
     events:
       - snsSqs:
-          name: Event
+          name: Other
           topicArn: ${self:custom.topicArn}
 
 resources:

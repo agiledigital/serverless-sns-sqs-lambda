@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest --clearCache && jest --runInBand",
     "plant-thy-self": "sh scripts/plant.sh",
-    "add-plat": "git add plant-uml-files/*",
-    "pre-commit": "npm run test && npm run plant-thy-self && npm run add-plat"
+    "add-plant": "git add plant-uml-files/*",
+    "pre-commit": "npm run test && npm run plant-thy-self && npm run add-plant"
   },
   "repository": {
     "type": "git",

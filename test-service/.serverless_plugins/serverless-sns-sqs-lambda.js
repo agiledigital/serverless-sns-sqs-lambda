@@ -36,20 +36,46 @@ module.exports = class ServerlessSnsSqsLambda {
     console.dir(template, { depth: null });
   }
 
-  addSnsSqsEvent(template, funcName, options) {
-    console.log(options);
+  addSnsSqsEvent(template, funcName, serverlessConfig) {
+    this.validateConfig(funcName, serverlessConfig);
+
     const funcNamePascalCase =
       funcName.slice(0, 1).toUpperCase() + funcName.slice(1);
-    options = {
+    const config = {
       funcName: funcNamePascalCase,
-      ...options
+      ...serverlessConfig
     };
 
-    this.addEventSourceMapping(template, options);
-    this.addEventDeadLetterQueue(template, options);
-    this.addEventQueue(template, options);
-    this.addEventQueuePolicy(template, options);
-    this.addTopicSubscription(template, options);
+    [
+      this.addEventSourceMapping,
+      this.addEventDeadLetterQueue,
+      this.addEventQueue,
+      this.addEventQueuePolicy,
+      this.addTopicSubscription,
+      this.addLambdaSqsPermissions
+    ].reduce((template, func) => {
+      func(template, config);
+      return template;
+    }, template);
+  }
+
+  validateConfig(funcName, { name, topicArn }) {
+    if (!name || !topicArn) {
+      console.error(`
+When creating an snsSqs handler, you must define both name and topicArn.
+In function ${funcName} name was [${name}] and topicArn was [${topicArn}].
+
+e.g.
+
+  functions:
+    processEvent:
+      handler: handler.handler
+      events:
+        - snsSqs:
+            name: Event
+            topicArn: \${self:custom.topicArn}
+`);
+    }
   }
 
   addEventSourceMapping(template, { funcName, name }) {
@@ -119,5 +145,23 @@ module.exports = class ServerlessSnsSqsLambda {
         TopicArn: topicArn
       }
     };
+  }
+
+  addLambdaSqsPermissions(template, { name }) {
+    template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
+      {
+        Effect: "Allow",
+        Action: [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ],
+        Resource: [
+          {
+            "Fn::GetAtt": [`${name}Queue`, "Arn"]
+          }
+        ]
+      }
+    );
   }
 };

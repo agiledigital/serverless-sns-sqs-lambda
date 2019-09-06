@@ -66,3 +66,6 @@ resources:
         Endpoint: !GetAtt EventQueue.Arn
         Protocol: sqs
         TopicArn: ${self:custom.topicArn}
+
+plugins:
+  - serverless-sns-sqs-lambda

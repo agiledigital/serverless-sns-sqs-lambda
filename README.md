@@ -9,6 +9,7 @@ boilerplate to add a Queue and a Dead Letter Queue between the Lambda and the
 SNS topic. This plugin allows you to define an sns subscriber with a `batchSize`
 and a `maxRetryCount` as simply as subscribing directly to the sns topic.
 
+![Plugin Architecture](./plant-uml-files/plugin-arch.png?raw=true "Plugin Architecture")
 
 # Table of Contents
 
@@ -38,11 +39,11 @@ functions:
     handler: handler.handler
     events:
       - snsSqs:
-          name: TestEvent      # Optional - choose a name for the event queue
+          name: TestEvent # Optional - choose a name for the event queue
           topicArn: !Ref Topic # Required - SNS topic to subscribe to
-          batchSize: 2         # Optional - default value is 10
-          maxRetryCount: 2     # Optional - default value is 5
-          filterPolicy:        # Optional - filter messages that are handled
+          batchSize: 2 # Optional - default value is 10
+          maxRetryCount: 2 # Optional - default value is 5
+          filterPolicy: # Optional - filter messages that are handled
             pets:
               - dog
               - cat

@@ -2,7 +2,13 @@
 
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
-This is the Serverless Framework plugin for AWS lambda Functions.
+This is a Serverless Framework plugin for AWS lambda Functions. Currently, it
+is possible to subsribe directly to an SNS topic. However, if you want to
+provide retry capability and error handling, you need to write a whole lot of
+boilerplate to add a Queue and a Dead Letter Queue between the Lambda and the
+SNS topic. This plugin allows you to define an sns subscriber with a `batchSize`
+and a `maxRetryCount` as simply as subscribing directly to the sns topic.
+
 
 # Table of Contents
 
@@ -27,16 +33,15 @@ plugins:
 Provide the lambda function with the snsSqs event, the plugin will add the AWS SNS topic and subscription, SQS queue and dead letter queue, and the role need for the lambda.
 
 ```yml
-custom:
-  topicArn: !Ref Topic
-
 functions:
   processEvent:
     handler: handler.handler
     events:
       - snsSqs:
-          name: TestEvent
-          topicArn: ${self:custom.topicArn}
+          name: TestEvent      # Required - choose a name for the event queue
+          topicArn: !Ref Topic # Required - SNS topic to subscribe to
+          batchSize: 2         # Optional - default value is 10
+          maxRetryCount: 2     # Optional - default value is 5
 
 resources:
   Resources:

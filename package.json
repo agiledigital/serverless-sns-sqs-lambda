@@ -4,7 +4,7 @@
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "lib/serverless-sns-sqs-lambda.js",
   "scripts": {
-    "test": "test"
+    "test": "jest --clearCache && jest --runInBand"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/agiledigital/serverless-sns-sqs-lambda/issues"
   },
-  "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme"
+  "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme",
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "serverless": "^1.51.0"
+  }
 }

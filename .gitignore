@@ -3,3 +3,4 @@ jspm_packages
 
 # Serverless directories
 **/.serverless
+node_modules

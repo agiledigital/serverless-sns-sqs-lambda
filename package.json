@@ -1,0 +1,22 @@
+{
+  "name": "serverless-sns-sqs-lambda",
+  "version": "0.0.1",
+  "description": "serverless plugin to make serverless-sns-sqs-lambda events",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agiledigital/serverless-sns-sqs-lambda.git"
+  },
+  "keywords": [
+    "serverless"
+  ],
+  "author": "agileDigital",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agiledigital/serverless-sns-sqs-lambda/issues"
+  },
+  "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme"
+}

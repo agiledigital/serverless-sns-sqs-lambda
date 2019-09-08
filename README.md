@@ -1,6 +1,6 @@
 # Serverless Sns Sqs Lambda
 
-[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE) [![CircleCI](https://circleci.com/gh/agiledigital/serverless-sns-sqs-lambda.svg?style=svg)](https://circleci.com/gh/agiledigital/serverless-sns-sqs-lambda) [![Build Status](https://travis-ci.com/agiledigital/serverless-sns-sqs-lambda.svg?branch=master)](https://travis-ci.com/agiledigital/serverless-sns-sqs-lambda)
 
 This is a Serverless Framework plugin for AWS lambda Functions. Currently, it
 is possible to subsribe directly to an SNS topic. However, if you want to

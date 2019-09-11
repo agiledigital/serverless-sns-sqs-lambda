@@ -1,6 +1,6 @@
 {
-  "name": "serverless-sns-sqs-lambda",
-  "version": "0.1.0",
+  "name": "@agiledigital/serverless-sns-sqs-lambda",
+  "version": "0.1.1",
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "lib/serverless-sns-sqs-lambda.js",
   "scripts": {
@@ -36,5 +36,8 @@
     "hooks": {
       "pre-commit": "npm run pre-commit"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

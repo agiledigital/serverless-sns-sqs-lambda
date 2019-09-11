@@ -1,23 +1,18 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/node:10
-
     working_directory: ~/repo
-
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
       - run: npm install
-
       - save_cache:
           paths:
             - node_modules
@@ -25,3 +20,26 @@ jobs:
 
       # run tests!
       - run: npm run test
+  deploy:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

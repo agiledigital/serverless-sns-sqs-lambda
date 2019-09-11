@@ -14,7 +14,12 @@
     "url": "git+https://github.com/agiledigital/serverless-sns-sqs-lambda.git"
   },
   "keywords": [
-    "serverless"
+    "serverless",
+    "sls",
+    "sns",
+    "sqs",
+    "aws",
+    "lambda"
   ],
   "author": "agileDigital",
   "license": "MIT",

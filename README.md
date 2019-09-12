@@ -20,13 +20,13 @@ and a `maxRetryCount` as simply as subscribing directly to the sns topic.
 
 Run `npm install` in your Serverless project.
 
-`$ npm install --save-dev serverless-sns-sqs-lambda`
+`$ npm install --save-dev @agiledigital/serverless-sns-sqs-lambda`
 
 Add the plugin to your serverless.yml file
 
 ```yml
 plugins:
-  - serverless-sns-sqs-lambda
+  - @agiledigital/serverless-sns-sqs-lambda
 ```
 
 ## Setup

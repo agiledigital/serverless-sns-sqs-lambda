@@ -26,7 +26,7 @@ Add the plugin to your serverless.yml file
 
 ```yml
 plugins:
-  - @agiledigital/serverless-sns-sqs-lambda
+  - "@agiledigital/serverless-sns-sqs-lambda"
 ```
 
 ## Setup

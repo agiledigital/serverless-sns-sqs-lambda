@@ -34,7 +34,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run pre-commit"
+      "pre-commit": "npm run pre-commit",
+      "pre-push":"npm version from-git"
     }
   },
   "publishConfig": {

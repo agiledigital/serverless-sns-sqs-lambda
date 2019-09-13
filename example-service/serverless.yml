@@ -14,7 +14,7 @@ functions:
     handler: handler.handler
     events:
       - snsSqs:
-          name: Other
+          name: ResourcePrefix
           topicArn: ${self:custom.topicArn}
           batchSize: 2
           maxRetryCount: 2

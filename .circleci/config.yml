@@ -31,7 +31,9 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: Publish package
-          command: npm publish
+          command: |
+            npm version from-git
+            npm publish
 workflows:
   version: 2
   test-deploy:
@@ -43,3 +45,5 @@ workflows:
           filters:
             branches:
               only: master
+            tags:
+              only: /v.*/

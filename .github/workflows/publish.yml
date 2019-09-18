@@ -1,11 +1,6 @@
 name: Publish
 # This workflow is triggered on pushes to the repository.
-on:
-  push:
-    branches:
-      - master
-    tags:
-      - "*"
+on: release
 
 jobs:
   build:

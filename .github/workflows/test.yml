@@ -6,6 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
+        # Limit the tests of the module to the versions that we want to support
         node: ["10", "11"]
     name: Test
     runs-on: ubuntu-latest

@@ -12,6 +12,10 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
+      - name: Tag
+        uses: actions/bin/filter@master
+        with:
+          args: tag
       - uses: actions/checkout@v1
       - name: Use Node.js 10.x
         uses: actions/setup-node@v1

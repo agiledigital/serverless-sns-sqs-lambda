@@ -16,6 +16,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           version: 10.x
+      - run: git config --global user.email "git@agiledigital.com.au"
+      - run: git config --global user.name "Git Ci"
       - run: npm version from-git
       - name: Publish
         uses: actions/npm@master

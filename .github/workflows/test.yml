@@ -1,0 +1,20 @@
+name: Test
+# This workflow is triggered on pushes to the repository.
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # Limit the tests of the module to the versions that we want to support
+        node: ["10", "11"]
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: CI=true npm test

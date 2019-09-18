@@ -1,6 +1,6 @@
 {
   "name": "@agiledigital/serverless-sns-sqs-lambda",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "lib/serverless-sns-sqs-lambda.js",
   "scripts": {
@@ -35,7 +35,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "npm run pre-commit",
-      "pre-push":"npm version from-git"
+      "pre-push": "npm version from-git"
     }
   },
   "publishConfig": {

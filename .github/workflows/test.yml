@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        node: ["10", "8"]
+        node: ["10", "11"]
     name: Test
     runs-on: ubuntu-latest
     steps:
@@ -16,4 +16,4 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
-      - run: npm test
+      - run: CI=true npm test

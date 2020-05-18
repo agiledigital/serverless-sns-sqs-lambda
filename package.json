@@ -1,5 +1,5 @@
 {
-  "name": "@agiledigital/serverless-sns-sqs-lambda",
+  "name": "@venncity/serverless-sns-sqs-lambda",
   "version": "0.1.8",
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "lib/serverless-sns-sqs-lambda.js",

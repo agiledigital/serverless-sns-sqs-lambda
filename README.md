@@ -43,6 +43,7 @@ functions:
           topicArn: !Ref Topic # Required - SNS topic to subscribe to
           batchSize: 2 # Optional - default value is 10
           maxRetryCount: 2 # Optional - default value is 5
+          rawMessageDelivery: true # Optional - default value is true
           filterPolicy: # Optional - filter messages that are handled
             pets:
               - dog

@@ -3,7 +3,7 @@
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE) 
 
 This is a Serverless Framework plugin for AWS lambda Functions. Currently, it
-is possible to subsribe directly to an SNS topic. However, if you want to
+is possible to subscribe directly to an SNS topic. However, if you want to
 provide retry capability and error handling, you need to write a whole lot of
 boilerplate to add a Queue and a Dead Letter Queue between the Lambda and the
 SNS topic. This plugin allows you to define an sns subscriber with a `batchSize`
@@ -54,7 +54,4 @@ resources:
       Type: AWS::SNS::Topic
       Properties:
         TopicName: TestTopic
-
-plugins:
-  - serverless-sns-sqs-lambda
 ```

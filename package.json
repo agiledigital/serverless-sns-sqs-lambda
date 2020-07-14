@@ -4,10 +4,7 @@
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "lib/serverless-sns-sqs-lambda.js",
   "scripts": {
-    "test": "jest --clearCache && jest --runInBand",
-    "plant-thy-self": "sh scripts/plant.sh",
-    "add-plant": "git add plant-uml-files/*",
-    "pre-commit": "npm run test && npm run plant-thy-self && npm run add-plant"
+    "test": "jest --clearCache && jest --runInBand"
   },
   "repository": {
     "type": "git",
@@ -28,15 +25,8 @@
   },
   "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme",
   "devDependencies": {
-    "husky": "^3.0.5",
     "jest": "^24.9.0",
     "serverless": "^1.51.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run pre-commit",
-      "pre-push": "npm version from-git --allow-same-version"
-    }
   },
   "publishConfig": {
     "access": "public"

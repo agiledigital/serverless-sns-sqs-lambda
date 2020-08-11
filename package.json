@@ -25,8 +25,8 @@
   },
   "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme",
   "devDependencies": {
-    "jest": "^24.9.0",
-    "serverless": "^1.51.0"
+    "jest": "^26.3.0",
+    "serverless": "^1.78.1"
   },
   "publishConfig": {
     "access": "public"

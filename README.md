@@ -43,6 +43,8 @@ functions:
           topicArn: !Ref Topic # Required - SNS topic to subscribe to
           batchSize: 2 # Optional - default value is 10
           maxRetryCount: 2 # Optional - default value is 5
+          kmsMasterKeyId: alias/aws/sqs # optional - default is none (no encryption)
+          kmsDataKeyReusePeriodSeconds: 600  # optional - AWS default is 300 seconds
           filterPolicy: # Optional - filter messages that are handled
             pets:
               - dog

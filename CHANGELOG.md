@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.1.11...v0.1.12) (2020-09-11)
+
+
+### Bug Fixes
+
+* Use raw ARN to avoid cyclic dependency ([f16ab09](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/f16ab09fa5872c804cd8ea64771e3cd27ca51865))
+
 ## [0.1.11](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.1.10...v0.1.11) (2020-08-11)
 
 

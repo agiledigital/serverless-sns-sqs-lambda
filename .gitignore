@@ -10,3 +10,6 @@ node_modules
 .vscode
 *.code-workspace
 .history
+
+# tsc output
+dist

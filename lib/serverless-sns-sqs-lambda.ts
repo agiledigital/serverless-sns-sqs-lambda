@@ -1,4 +1,25 @@
-"use strict";
+// Future work: Properly type the file
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Defines the structure of the config object
+ * that is passed to the main functions to
+ * generate the Serverless template.
+ */
+type Config = {
+  name: string;
+  topicArn: string;
+  funcName: string;
+  prefix: string;
+  batchSize: number;
+  maxRetryCount: number;
+  kmsMasterKeyId: string;
+  kmsDataKeyReusePeriodSeconds: number;
+  visibilityTimeout: number;
+  rawMessageDelivery: boolean;
+  filterPolicy: any;
+};
 
 /**
  * Parse a value into a number or set it to a default value.
@@ -23,7 +44,7 @@ const parseIntOr = (intString, defaultInt) => {
  *
  * @param {string} camelCase camelCase string
  */
-const pascalCase = (camelCase) =>
+const pascalCase = camelCase =>
   camelCase.slice(0, 1).toUpperCase() + camelCase.slice(1);
 
 /**
@@ -49,7 +70,14 @@ const pascalCase = (camelCase) =>
  *                   - dog
  *                   - cat
  */
-module.exports = class ServerlessSnsSqsLambda {
+export default class ServerlessSnsSqsLambda {
+  serverless: any;
+  options: any;
+  provider: any;
+  custom: any;
+  serviceName: string;
+  hooks: any;
+
   /**
    * @param {*} serverless
    * @param {*} options
@@ -83,10 +111,10 @@ module.exports = class ServerlessSnsSqsLambda {
     const template = this.serverless.service.provider
       .compiledCloudFormationTemplate;
 
-    Object.keys(functions).forEach((funcKey) => {
+    Object.keys(functions).forEach(funcKey => {
       const func = functions[funcKey];
       if (func.events) {
-        func.events.forEach((event) => {
+        func.events.forEach(event => {
           if (event.snsSqs) {
             if (this.options.verbose) {
               console.info(
@@ -134,7 +162,7 @@ module.exports = class ServerlessSnsSqsLambda {
    * @param {object} config the configuration values from the snsSqs event
    *  portion of the serverless function config
    */
-  validateConfig(funcName, stage, config) {
+  validateConfig(funcName, stage, config): Config {
     if (!config.topicArn || !config.name) {
       throw new Error(`Error:
 When creating an snsSqs handler, you must define the name and topicArn.
@@ -194,7 +222,7 @@ Usage
    * @param {{funcName, name, prefix, batchSize}} config including name of the queue
    *  and the resource prefix
    */
-  addEventSourceMapping(template, { funcName, name, batchSize }) {
+  addEventSourceMapping(template, { funcName, name, batchSize }: Config) {
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
       DependsOn: "IamRoleLambdaExecution",
@@ -254,7 +282,7 @@ Usage
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       visibilityTimeout
-    }
+    }: Config
   ) {
     template.Resources[`${name}Queue`] = {
       Type: "AWS::SQS::Queue",
@@ -292,7 +320,7 @@ Usage
    * @param {{name, prefix, topicArn}} config including name of the queue, the
    *  resource prefix and the arn of the topic
    */
-  addEventQueuePolicy(template, { name, prefix, topicArn }) {
+  addEventQueuePolicy(template, { name, prefix, topicArn }: Config) {
     template.Resources[`${name}QueuePolicy`] = {
       Type: "AWS::SQS::QueuePolicy",
       Properties: {
@@ -324,7 +352,7 @@ Usage
    */
   addTopicSubscription(
     template,
-    { name, topicArn, filterPolicy, rawMessageDelivery }
+    { name, topicArn, filterPolicy, rawMessageDelivery }: Config
   ) {
     template.Resources[`Subscribe${name}Topic`] = {
       Type: "AWS::SNS::Subscription",
@@ -364,4 +392,4 @@ Usage
       }
     );
   }
-};
+}

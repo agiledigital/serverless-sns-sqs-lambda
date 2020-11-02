@@ -1,9 +1,9 @@
 "use strict";
 
-const ServerlessSnsSqsLambda = require("./serverless-sns-sqs-lambda");
-const Serverless = require("serverless/lib/Serverless");
-const AwsProvider = require("serverless/lib/plugins/aws/provider/awsProvider");
-const CLI = require("serverless/lib/classes/CLI");
+import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
+import Serverless from "serverless/lib/Serverless";
+import AwsProvider from "serverless/lib/plugins/aws/provider/awsProvider";
+import CLI from "serverless/lib/classes/CLI";
 
 const slsOpt = {
   stage: "dev-test",

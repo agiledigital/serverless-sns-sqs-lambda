@@ -44,6 +44,8 @@ jobs:
         run: yarn run type-coverage
       - name: Test
         run: yarn run test
+      - name: Package example service to ensure compatibility
+        run: cd example-service && yarn install --frozen-lockfile && yarn sls package
       - name: Run Semantic Release
         run: yarn semantic-release
         if: matrix.node-version == '12.x'

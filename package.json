@@ -33,6 +33,7 @@
     "cz-conventional-changelog": "^3.2.0",
     "eslint": "^7.6.0",
     "jest": "^26.3.0",
+    "prettier": "^2.1.2",
     "semantic-release": "^17.1.1",
     "serverless": "^2.0.0",
     "type-coverage": "^2.14.0",

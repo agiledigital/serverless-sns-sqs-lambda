@@ -1,0 +1,8 @@
+node_modules
+.serverless
+dist
+lib
+.build
+coverage
+.webpack
+generated

@@ -5,3 +5,8 @@ jspm_packages
 **/.serverless
 node_modules
 /.idea
+
+# VS Code
+.vscode
+*.code-workspace
+.history

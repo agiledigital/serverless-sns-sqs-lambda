@@ -31,4 +31,4 @@ resources:
         TopicName: TestTopic
 
 plugins:
-  - '@agiledigital/serverless-sns-sqs-lambda'
+  - "@agiledigital/serverless-sns-sqs-lambda"

@@ -5,3 +5,4 @@ dist
 coverage
 .webpack
 generated
+CHANGELOG.md

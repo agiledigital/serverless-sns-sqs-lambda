@@ -54,7 +54,7 @@
     }
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "typeCoverage": {
     "atLeast": 48.51,

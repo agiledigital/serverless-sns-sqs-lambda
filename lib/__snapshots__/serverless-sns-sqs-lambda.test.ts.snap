@@ -1,5 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test Serverless SNS SQS Lambda when all parameters are provided should produce valid SQS CF template items 1`] = `
+Object {
+  "Resources": Object {
+    "some nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "KmsDataKeyReusePeriodSeconds": 200,
+        "KmsMasterKeyId": "some key",
+        "QueueName": "some prefixsome nameDeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some nameQueue": Object {
+      "Properties": Object {
+        "KmsDataKeyReusePeriodSeconds": 200,
+        "KmsMasterKeyId": "some key",
+        "QueueName": "some prefixsome nameQueue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 4,
+        },
+        "VisibilityTimeout": 999,
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+  },
+}
+`;
+
 exports[`Test Serverless SNS SQS Lambda when encryption parameters are not provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
@@ -28,22 +61,18 @@ Object {
 }
 `;
 
-exports[`Test Serverless SNS SQS Lambda when encryption parameters are provided should produce valid SQS CF template items 1`] = `
+exports[`Test Serverless SNS SQS Lambda when no optional parameters are provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
     "some nameDeadLetterQueue": Object {
       "Properties": Object {
-        "KmsDataKeyReusePeriodSeconds": 200,
-        "KmsMasterKeyId": "some key",
-        "QueueName": "some prefixsome nameDeadLetterQueue",
+        "QueueName": "undefinedsome nameDeadLetterQueue",
       },
       "Type": "AWS::SQS::Queue",
     },
     "some nameQueue": Object {
       "Properties": Object {
-        "KmsDataKeyReusePeriodSeconds": 200,
-        "KmsMasterKeyId": "some key",
-        "QueueName": "some prefixsome nameQueue",
+        "QueueName": "undefinedsome nameQueue",
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [
@@ -51,7 +80,7 @@ Object {
               "Arn",
             ],
           },
-          "maxReceiveCount": 4,
+          "maxReceiveCount": undefined,
         },
       },
       "Type": "AWS::SQS::Queue",

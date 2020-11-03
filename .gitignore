@@ -4,3 +4,12 @@ jspm_packages
 # Serverless directories
 **/.serverless
 node_modules
+/.idea
+
+# VS Code
+.vscode
+*.code-workspace
+.history
+
+# tsc output
+dist

@@ -1,4 +1,25 @@
-"use strict";
+// Future work: Properly type the file
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Defines the structure of the config object
+ * that is passed to the main functions to
+ * generate the Serverless template.
+ */
+type Config = {
+  name: string;
+  topicArn: string;
+  funcName: string;
+  prefix: string;
+  batchSize: number;
+  maxRetryCount: number;
+  kmsMasterKeyId: string;
+  kmsDataKeyReusePeriodSeconds: number;
+  visibilityTimeout: number;
+  rawMessageDelivery: boolean;
+  filterPolicy: any;
+};
 
 /**
  * Parse a value into a number or set it to a default value.
@@ -49,7 +70,14 @@ const pascalCase = camelCase =>
  *                   - dog
  *                   - cat
  */
-module.exports = class ServerlessSnsSqsLambda {
+export default class ServerlessSnsSqsLambda {
+  serverless: any;
+  options: any;
+  provider: any;
+  custom: any;
+  serviceName: string;
+  hooks: any;
+
   /**
    * @param {*} serverless
    * @param {*} options
@@ -134,7 +162,7 @@ module.exports = class ServerlessSnsSqsLambda {
    * @param {object} config the configuration values from the snsSqs event
    *  portion of the serverless function config
    */
-  validateConfig(funcName, stage, config) {
+  validateConfig(funcName, stage, config): Config {
     if (!config.topicArn || !config.name) {
       throw new Error(`Error:
 When creating an snsSqs handler, you must define the name and topicArn.
@@ -152,10 +180,13 @@ Usage
         - snsSqs:
             name: Event                        # required
             topicArn: !Ref TopicArn            # required
+            prefix: some-prefix                # optional - default is \`\${this.serviceName}-\${stage}-\${funcNamePascalCase}\`
             maxRetryCount: 2                   # optional - default is 5
             batchSize: 1                       # optional - default is 10
             kmsMasterKeyId: alias/aws/sqs      # optional - default is none (no encryption)
             kmsDataKeyReusePeriodSeconds: 600  # optional - AWS default is 300 seconds
+            visibilityTimeout: 30              # optional - AWS default is 30 seconds
+            rawMessageDelivery: false          # optional - default is false
             filterPolicy:
               pet:
                 - dog
@@ -174,7 +205,12 @@ Usage
       batchSize: parseIntOr(config.batchSize, 10),
       maxRetryCount: parseIntOr(config.maxRetryCount, 5),
       kmsMasterKeyId: config.kmsMasterKeyId,
-      kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds
+      kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds,
+      visibilityTimeout: config.visibilityTimeout,
+      rawMessageDelivery:
+        config.rawMessageDelivery !== undefined
+          ? config.rawMessageDelivery
+          : false
     };
   }
 
@@ -186,7 +222,7 @@ Usage
    * @param {{funcName, name, prefix, batchSize}} config including name of the queue
    *  and the resource prefix
    */
-  addEventSourceMapping(template, { funcName, name, batchSize }) {
+  addEventSourceMapping(template, { funcName, name, batchSize }: Config) {
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
       DependsOn: "IamRoleLambdaExecution",
@@ -207,17 +243,24 @@ Usage
    * @param {{name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }} config including name of the queue
    *  and the resource prefix
    */
-  addEventDeadLetterQueue(template, { name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }) {
+  addEventDeadLetterQueue(
+    template,
+    { name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }
+  ) {
     template.Resources[`${name}DeadLetterQueue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
         QueueName: `${prefix}${name}DeadLetterQueue`,
-        ...(kmsMasterKeyId !== undefined ? {
-          KmsMasterKeyId: kmsMasterKeyId,
-        } : {}),
-        ...(kmsDataKeyReusePeriodSeconds !== undefined ? {
-          KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds,
-        } : {}),
+        ...(kmsMasterKeyId !== undefined
+          ? {
+              KmsMasterKeyId: kmsMasterKeyId
+            }
+          : {}),
+        ...(kmsDataKeyReusePeriodSeconds !== undefined
+          ? {
+              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
+          : {})
       }
     };
   }
@@ -227,10 +270,20 @@ Usage
    * from SNS as they arrive, holding them for processing.
    *
    * @param {object} template the template which gets mutated
-   * @param {{name, prefix, maxRetryCount, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds}} config including name of the queue,
+   * @param {{name, prefix, maxRetryCount, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, visibilityTimeout}} config including name of the queue,
    *  the resource prefix and the max retry count for message handler failures.
    */
-  addEventQueue(template, { name, prefix, maxRetryCount, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }) {
+  addEventQueue(
+    template,
+    {
+      name,
+      prefix,
+      maxRetryCount,
+      kmsMasterKeyId,
+      kmsDataKeyReusePeriodSeconds,
+      visibilityTimeout
+    }: Config
+  ) {
     template.Resources[`${name}Queue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
@@ -241,12 +294,21 @@ Usage
           },
           maxReceiveCount: maxRetryCount
         },
-        ...(kmsMasterKeyId !== undefined ? {
-          KmsMasterKeyId: kmsMasterKeyId,
-        } : {}),
-        ... (kmsDataKeyReusePeriodSeconds !== undefined ? {
-          KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds,
-        } : {})
+        ...(kmsMasterKeyId !== undefined
+          ? {
+              KmsMasterKeyId: kmsMasterKeyId
+            }
+          : {}),
+        ...(kmsDataKeyReusePeriodSeconds !== undefined
+          ? {
+              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
+          : {}),
+        ...(visibilityTimeout !== undefined
+          ? {
+              VisibilityTimeout: visibilityTimeout
+            }
+          : {})
       }
     };
   }
@@ -258,7 +320,7 @@ Usage
    * @param {{name, prefix, topicArn}} config including name of the queue, the
    *  resource prefix and the arn of the topic
    */
-  addEventQueuePolicy(template, { name, prefix, topicArn }) {
+  addEventQueuePolicy(template, { name, prefix, topicArn }: Config) {
     template.Resources[`${name}QueuePolicy`] = {
       Type: "AWS::SQS::QueuePolicy",
       Properties: {
@@ -288,14 +350,22 @@ Usage
    * @param {{name, topicArn, filterPolicy}} config including name of the queue,
    *  the arn of the topic and the filter policy for the subscription
    */
-  addTopicSubscription(template, { name, topicArn, filterPolicy }) {
+  addTopicSubscription(
+    template,
+    { name, topicArn, filterPolicy, rawMessageDelivery }: Config
+  ) {
     template.Resources[`Subscribe${name}Topic`] = {
       Type: "AWS::SNS::Subscription",
       Properties: {
         Endpoint: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
         Protocol: "sqs",
         TopicArn: topicArn,
-        ...(filterPolicy ? { FilterPolicy: filterPolicy } : {})
+        ...(filterPolicy ? { FilterPolicy: filterPolicy } : {}),
+        ...(rawMessageDelivery !== undefined
+          ? {
+              RawMessageDelivery: rawMessageDelivery
+            }
+          : {})
       }
     };
   }
@@ -322,4 +392,4 @@ Usage
       }
     );
   }
-};
+}

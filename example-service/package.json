@@ -9,7 +9,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "serverless-sns-sqs-lambda": "0.0.8"
+  "devDependencies": {
+    "@agiledigital/serverless-sns-sqs-lambda": "file:../",
+    "serverless": "^2.0.0"
   }
 }

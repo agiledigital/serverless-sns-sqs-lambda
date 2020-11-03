@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.1.12...v0.2.0) (2020-11-03)
+
+
+### Features
+
+* force release ([fca8a5a](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/fca8a5adde9e595c6f99f8e088ac01fad98dbb33))
+
 ## [0.1.12](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.1.11...v0.1.12) (2020-09-11)
 
 

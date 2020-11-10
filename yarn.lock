@@ -973,7 +973,7 @@
     node-fetch "^2.6.0"
     shortid "^2.2.14"
 
-"@serverless/components@^3.2.7":
+"@serverless/components@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@serverless/components/-/components-3.3.0.tgz#bf297d0734117009425c01166759c339bf8785d8"
   integrity sha512-QEjWK9jsIXMh9j/my8HJDtS04bL0TtiLPIr50jfPMUkqnl51thZGHswNwkkuCsmnvcQhZGspD68hIqWPlQRjMw==
@@ -1019,10 +1019,10 @@
     ramda "^0.26.1"
     semver "^6.1.1"
 
-"@serverless/enterprise-plugin@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@serverless/enterprise-plugin/-/enterprise-plugin-4.1.1.tgz#d5549817dbd47c90240e47252883bf6c2a3ad121"
-  integrity sha512-ga9g/bRyA6LCckYPU8jvx63Q9+Po/yZxbdbYb2KiCZ+0S1YcQQsjDJwsOTAAgQ6AEp95TtrQkn3BycYTSGEm7A==
+"@serverless/enterprise-plugin@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@serverless/enterprise-plugin/-/enterprise-plugin-4.1.2.tgz#b8b48bcc39853c380a4023ffbdc6572415dbbb11"
+  integrity sha512-aAHF9ElWr0eaAEVXy6M9DvokiyVV/y5xokiBnAhQisMT2faTVlCX1B8D1nJef0NdJ6pXJVOd3JrXC4rIxjz0zg==
   dependencies:
     "@serverless/event-mocks" "^1.1.1"
     "@serverless/platform-client" "^3.1.2"
@@ -1031,7 +1031,6 @@
     child-process-ext "^2.1.1"
     chokidar "^3.4.3"
     cli-color "^2.0.0"
-    find-process "^1.4.3"
     flat "^5.0.2"
     fs-extra "^9.0.1"
     js-yaml "^3.14.0"
@@ -1891,10 +1890,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.781.0:
-  version "2.782.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.782.0.tgz#84e22bf1bf370f702cb741b95a25356745b0a632"
-  integrity sha512-8aCZBQQoJ5dUWb0Ij8x7MwrKKuoHGF3g3EoDiRDJws/VdYSs995S0OTNX5/TwaR/ltdtBU0t+GGGTPPQFYZ1nA==
+aws-sdk@^2.787.0:
+  version "2.788.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.788.0.tgz#020f84975db9623d0a434105991e7074c488693f"
+  integrity sha512-UKc+4MFRezIkgk668mylj7MpVD2dCtiDBppgx05SwYSDGT60bixrKv3nE/YJK+gAv53CWVf7WL6hNv76+TWkTA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -2757,11 +2756,6 @@ commander@^2.8.1:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
-commander@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
-  integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
-
 commander@~4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
@@ -3088,10 +3082,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dayjs@^1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.9.4.tgz#fcde984e227f4296f04e7b05720adad2e1071f1b"
-  integrity sha512-ABSF3alrldf7nM9sQ2U+Ln67NRwmzlLOqG7kK03kck0mw3wlSSEKv/XhKGGxUjQcS57QeiCyNdrFgtj9nWlrng==
+dayjs@^1.9.5:
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.9.5.tgz#fd49994ebe71639d2ce9575e97186642dfce9808"
+  integrity sha512-WULIw7UpW/E0y6VywewpbXAMH3d5cZijEhoHLwM+OMVbk/NtchKS/W+57H/0P1rqU7gHrAArjiRLHCUhgMQl6w==
 
 debug@3.1.0, debug@=3.1.0, debug@~3.1.0:
   version "3.1.0"
@@ -4201,15 +4195,6 @@ find-npm-prefix@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/find-npm-prefix/-/find-npm-prefix-1.0.2.tgz#8d8ce2c78b3b4b9e66c8acc6a37c231eb841cfdf"
   integrity sha512-KEftzJ+H90x6pcKtdXZEPsQse8/y/UnvzRKrOSQFprnrGaFuJ62fVkP34Iu2IYuMvyauCyoLTNkJZgrrGA2wkA==
-
-find-process@^1.4.3:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/find-process/-/find-process-1.4.4.tgz#52820561162fda0d1feef9aed5d56b3787f0fd6e"
-  integrity sha512-rRSuT1LE4b+BFK588D2V8/VG9liW0Ark1XJgroxZXI0LtwmQJOb490DvDYvbm+Hek9ETFzTutGfJ90gumITPhQ==
-  dependencies:
-    chalk "^4.0.0"
-    commander "^5.1.0"
-    debug "^4.1.1"
 
 find-requires@^1.0.0:
   version "1.0.0"
@@ -8975,25 +8960,25 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.2.0, semver@^6.3.0:
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 serverless@^2.0.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.9.0.tgz#7c7a158ed604201f66f4344db60653f6d3e93328"
-  integrity sha512-BrjprNv7wwzORfCvrBCslpC0r9VG0FuhCl9iYJHzV7cCMtIafuOa6oX6LWIa+rPtfL0TR0TsQwwFiEADI/OMWg==
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.11.1.tgz#0a6344d67bdde4a33f00ac67a9e009852c619bd9"
+  integrity sha512-BQN53zkm/HWh+QtzaR/uXHRAxAcabHkstyRMo4+9JJc+DM7cQM9cyRBm15BW9PKMO9c3aCKYNTJSb5cegn7qmw==
   dependencies:
     "@serverless/cli" "^1.5.2"
-    "@serverless/components" "^3.2.7"
-    "@serverless/enterprise-plugin" "^4.1.1"
+    "@serverless/components" "^3.3.0"
+    "@serverless/enterprise-plugin" "^4.1.2"
     "@serverless/utils" "^2.0.0"
     ajv "^6.12.6"
     ajv-keywords "^3.5.2"
     archiver "^5.0.2"
-    aws-sdk "^2.781.0"
+    aws-sdk "^2.787.0"
     bluebird "^3.7.2"
     boxen "^4.2.0"
     cachedir "^2.3.0"
     chalk "^4.1.0"
     child-process-ext "^2.1.1"
     d "^1.0.1"
-    dayjs "^1.9.4"
+    dayjs "^1.9.5"
     decompress "^4.2.1"
     download "^8.0.0"
     essentials "^1.1.1"
@@ -9028,7 +9013,7 @@ serverless@^2.0.0:
     untildify "^4.0.0"
     uuid "^8.3.1"
     yaml-ast-parser "0.0.43"
-    yargs-parser "^20.2.3"
+    yargs-parser "^20.2.4"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
@@ -10754,10 +10739,10 @@ yamljs@^0.3.0:
     argparse "^1.0.7"
     glob "^7.0.5"
 
-yargs-parser@20.x, yargs-parser@^20.2.3:
-  version "20.2.3"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.3.tgz#92419ba867b858c868acf8bae9bf74af0dd0ce26"
-  integrity sha512-emOFRT9WVHw03QSvN5qor9QQT9+sw5vwxfYweivSMHTcAXPefwVae2FjO7JJjj8hCE4CzPOPeFM83VwT29HCww==
+yargs-parser@20.x, yargs-parser@^20.2.4:
+  version "20.2.4"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-20.2.4.tgz#b42890f14566796f85ae8e3a25290d205f154a54"
+  integrity sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==
 
 yargs-parser@^15.0.1:
   version "15.0.1"

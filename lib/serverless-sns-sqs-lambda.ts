@@ -386,8 +386,12 @@ Usage
           "sqs:GetQueueAttributes"
         ],
         Resource: [
-          `arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${prefix}${name}Queue`,
-          `arn:aws:sqs:#{AWS::Region}:#{AWS::AccountId}:${prefix}${name}DeadLetterQueue`
+          {
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue`,
+          },
+          {
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue`,
+          },
         ]
       }
     );

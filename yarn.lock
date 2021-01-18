@@ -9027,7 +9027,7 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.2.0, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
-serverless@^2.0.0:
+serverless@^2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.19.0.tgz#c464f0abac97f1a2da9d009cac17541e8b78050d"
   integrity sha512-JvNB+llJXIfsMk6weTh5/aCMEvTGnizQ/ZHfyyXhLuBHm0cAa9h6bpyBagnC5CTtV++jwCR2WKu2a0SQQEmEvA==

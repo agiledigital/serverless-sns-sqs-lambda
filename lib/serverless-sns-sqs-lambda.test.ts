@@ -1,9 +1,9 @@
 "use strict";
 
-import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
-import Serverless from "serverless/lib/Serverless";
-import AwsProvider from "serverless/lib/plugins/aws/provider/awsProvider";
 import CLI from "serverless/lib/classes/CLI";
+import AwsProvider from "serverless/lib/plugins/aws/provider";
+import Serverless from "serverless/lib/Serverless";
+import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
 
 const slsOpt = {
   stage: "dev-test",

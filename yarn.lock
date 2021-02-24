@@ -1511,14 +1511,6 @@
     "@typescript-eslint/typescript-estree" "4.15.1"
     debug "^4.1.1"
 
-"@typescript-eslint/scope-manager@4.14.2":
-  version "4.14.2"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.14.2.tgz#64cbc9ca64b60069aae0c060b2bf81163243b266"
-  integrity sha512-cuV9wMrzKm6yIuV48aTPfIeqErt5xceTheAgk70N1V4/2Ecj+fhl34iro/vIssJlb7XtzcaD07hWk7Jk0nKghg==
-  dependencies:
-    "@typescript-eslint/types" "4.14.2"
-    "@typescript-eslint/visitor-keys" "4.14.2"
-
 "@typescript-eslint/scope-manager@4.15.1":
   version "4.15.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.15.1.tgz#f6511eb38def2a8a6be600c530c243bbb56ac135"
@@ -1527,29 +1519,10 @@
     "@typescript-eslint/types" "4.15.1"
     "@typescript-eslint/visitor-keys" "4.15.1"
 
-"@typescript-eslint/types@4.14.2":
-  version "4.14.2"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.14.2.tgz#d96da62be22dc9dc6a06647f3633815350fb3174"
-  integrity sha512-LltxawRW6wXy4Gck6ZKlBD05tCHQUj4KLn4iR69IyRiDHX3d3NCAhO+ix5OR2Q+q9bjCrHE/HKt+riZkd1At8Q==
-
 "@typescript-eslint/types@4.15.1":
   version "4.15.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.15.1.tgz#da702f544ef1afae4bc98da699eaecd49cf31c8c"
   integrity sha512-iGsaUyWFyLz0mHfXhX4zO6P7O3sExQpBJ2dgXB0G5g/8PRVfBBsmQIc3r83ranEQTALLR3Vko/fnCIVqmH+mPw==
-
-"@typescript-eslint/typescript-estree@4.14.2":
-  version "4.14.2"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-4.14.2.tgz#9c5ebd8cae4d7b014f890acd81e8e17f309c9df9"
-  integrity sha512-ESiFl8afXxt1dNj8ENEZT12p+jl9PqRur+Y19m0Z/SPikGL6rqq4e7Me60SU9a2M28uz48/8yct97VQYaGl0Vg==
-  dependencies:
-    "@typescript-eslint/types" "4.14.2"
-    "@typescript-eslint/visitor-keys" "4.14.2"
-    debug "^4.1.1"
-    globby "^11.0.1"
-    is-glob "^4.0.1"
-    lodash "^4.17.15"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
 
 "@typescript-eslint/typescript-estree@4.15.1":
   version "4.15.1"
@@ -1563,14 +1536,6 @@
     is-glob "^4.0.1"
     semver "^7.3.2"
     tsutils "^3.17.1"
-
-"@typescript-eslint/visitor-keys@4.14.2":
-  version "4.14.2"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.14.2.tgz#997cbe2cb0690e1f384a833f64794e98727c70c6"
-  integrity sha512-KBB+xLBxnBdTENs/rUgeUKO0UkPBRs2vD09oMRRIkj5BEN8PX1ToXV532desXfpQnZsYTyLLviS7JrPhdL154w==
-  dependencies:
-    "@typescript-eslint/types" "4.14.2"
-    eslint-visitor-keys "^2.0.0"
 
 "@typescript-eslint/visitor-keys@4.15.1":
   version "4.15.1"
@@ -10244,10 +10209,10 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-type-coverage-core@^2.15.1:
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.15.1.tgz#a0e7bc279be56f1a44d1702ddef5285cc3190f0f"
-  integrity sha512-dwdp0nnbMre0cw3H2/pXkqtLixtHrr+6JcQSASuVbDUrvWrgUcYIDccUdrsg6p2xeQmHdfaqAh4TsX8/aYFL3A==
+type-coverage-core@^2.16.2:
+  version "2.16.2"
+  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.16.2.tgz#1ec0a1f9002eec2c02ab42aab9f0acd3a07e49ae"
+  integrity sha512-Cs2UlM4fkhtN57nLBVVmR5clC3H4d9mlj1VzE2VvGpO49wgj4is3SWf1UuiLL4Tv8iaq9E0h2kSxCijHBvjCig==
   dependencies:
     glob "7"
     minimatch "3"
@@ -10255,12 +10220,12 @@ type-coverage-core@^2.15.1:
     tsutils "3"
 
 type-coverage@^2.14.0:
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-2.15.1.tgz#157e5000a65048c7808e36837a0eedf9a5039cba"
-  integrity sha512-HvqD19WtsUlmbSCY3De/HcKUyohjgtQoNHdlVjed8WcySGVgEjGpjF4pZUiLZDVsZf3+VwNvkHoLewLEWXWdQQ==
+  version "2.16.2"
+  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-2.16.2.tgz#66d8b6ba18a9f9ae330a93252e0eb6f771c13ba6"
+  integrity sha512-7dsOFuuobxR1eNAUvXcde6KpxHRoTdns7D7dl6O1cEO1QTODkvt6pUafvBhKqPiCHOJzEQqgPxji2Ukeli3RDg==
   dependencies:
     minimist "1"
-    type-coverage-core "^2.15.1"
+    type-coverage-core "^2.16.2"
 
 type-detect@4.0.8:
   version "4.0.8"

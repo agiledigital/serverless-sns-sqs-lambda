@@ -7,6 +7,7 @@ Object {
       "Properties": Object {
         "KmsDataKeyReusePeriodSeconds": 200,
         "KmsMasterKeyId": "some key",
+        "MessageRetentionPeriod": 1209600,
         "QueueName": "some prefixsome nameDeadLetterQueue",
       },
       "Type": "AWS::SQS::Queue",

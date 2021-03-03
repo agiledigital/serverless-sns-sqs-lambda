@@ -15,13 +15,6 @@ jobs:
     # Don't build if Semantic Release pushes a ci skip commit
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
 
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      # Not the same as GITHUB_TOKEN
-      # This token authenticates on behalf of the maintainer, not github actions itself
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
@@ -29,7 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          # Prevents interference with release credentials
+          # See https://github.com/semantic-release/semantic-release/blob/master/docs/recipes/github-actions.md#pushing-packagejson-changes-to-a-master-branch
+          persist-credentials: false
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -47,5 +42,16 @@ jobs:
       - name: Package example service to ensure compatibility
         run: cd example-service && yarn install --frozen-lockfile && yarn sls package
       - name: Run Semantic Release
+        env:
+          # TODO: While not ideal to have to use a developer's token to push to master here,
+          #       it is currently the only way to do it with GitHub actions at the moment if master
+          #       is a protected branch.
+          #       Secrets are not exposed in PR builds for security reasons, but semantic release will
+          #       never have to push or release anything in that case so its fine.
+          # Not the same as GITHUB_TOKEN
+          # This token authenticates on behalf of the maintainer, not github actions itself to allow changes to be pushed
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn semantic-release
         if: matrix.node-version == '12.x'

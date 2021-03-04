@@ -11,6 +11,6 @@
   "license": "ISC",
   "devDependencies": {
     "@agiledigital/serverless-sns-sqs-lambda": "file:../",
-    "serverless": "^2.0.0"
+    "serverless": "^2.19.0"
   }
 }

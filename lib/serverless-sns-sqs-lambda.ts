@@ -16,6 +16,7 @@ type Config = {
   maxRetryCount: number;
   kmsMasterKeyId: string;
   kmsDataKeyReusePeriodSeconds: number;
+  deadLetterMessageRetentionPeriodSeconds: number;
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
@@ -178,15 +179,16 @@ Usage
       handler: handler.handler
       events:
         - snsSqs:
-            name: Event                        # required
-            topicArn: !Ref TopicArn            # required
-            prefix: some-prefix                # optional - default is \`\${this.serviceName}-\${stage}-\${funcNamePascalCase}\`
-            maxRetryCount: 2                   # optional - default is 5
-            batchSize: 1                       # optional - default is 10
-            kmsMasterKeyId: alias/aws/sqs      # optional - default is none (no encryption)
-            kmsDataKeyReusePeriodSeconds: 600  # optional - AWS default is 300 seconds
-            visibilityTimeout: 30              # optional - AWS default is 30 seconds
-            rawMessageDelivery: false          # optional - default is false
+            name: Event                                      # required
+            topicArn: !Ref TopicArn                          # required
+            prefix: some-prefix                              # optional - default is \`\${this.serviceName}-\${stage}-\${funcNamePascalCase}\`
+            maxRetryCount: 2                                 # optional - default is 5
+            batchSize: 1                                     # optional - default is 10
+            kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)
+            kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
+            deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
+            visibilityTimeout: 30                            # optional - AWS default is 30 seconds
+            rawMessageDelivery: false                        # optional - default is false
             filterPolicy:
               pet:
                 - dog
@@ -206,6 +208,8 @@ Usage
       maxRetryCount: parseIntOr(config.maxRetryCount, 5),
       kmsMasterKeyId: config.kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds,
+      deadLetterMessageRetentionPeriodSeconds:
+        config.deadLetterMessageRetentionPeriodSeconds,
       visibilityTimeout: config.visibilityTimeout,
       rawMessageDelivery:
         config.rawMessageDelivery !== undefined
@@ -240,12 +244,18 @@ Usage
    * inspection and handling.
    *
    * @param {object} template the template which gets mutated
-   * @param {{name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }} config including name of the queue
+   * @param {{name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, deadLetterMessageRetentionPeriodSeconds }} config including name of the queue
    *  and the resource prefix
    */
   addEventDeadLetterQueue(
     template,
-    { name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds }
+    {
+      name,
+      prefix,
+      kmsMasterKeyId,
+      kmsDataKeyReusePeriodSeconds,
+      deadLetterMessageRetentionPeriodSeconds
+    }
   ) {
     template.Resources[`${name}DeadLetterQueue`] = {
       Type: "AWS::SQS::Queue",
@@ -259,6 +269,11 @@ Usage
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
               KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
+          : {}),
+        ...(deadLetterMessageRetentionPeriodSeconds !== undefined
+          ? {
+              MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
             }
           : {})
       }
@@ -387,11 +402,11 @@ Usage
         ],
         Resource: [
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue`,
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue`
           },
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue`,
-          },
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue`
+          }
         ]
       }
     );

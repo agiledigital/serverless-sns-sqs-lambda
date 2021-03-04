@@ -90,6 +90,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
         maxRetryCount: 4,
         kmsMasterKeyId: "some key",
         kmsDataKeyReusePeriodSeconds: 200,
+        deadLetterMessageRetentionPeriodSeconds: 1209600,
         visibilityTimeout: 999,
         rawMessageDelivery: true,
         filterPolicy: { pet: ["dog", "cat"] }

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.2.1...v0.3.0) (2021-03-04)
+
+
+### Features
+
+* add `deadLetterMessageRetentionPeriodSeconds` option ([89a17b8](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/89a17b829c48f66574efcaeea478193a6954ac53))
+
 ## [0.2.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.2.0...v0.2.1) (2021-01-20)
 
 

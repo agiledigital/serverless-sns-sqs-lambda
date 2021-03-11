@@ -17,6 +17,7 @@ type Config = {
   kmsMasterKeyId: string;
   kmsDataKeyReusePeriodSeconds: number;
   deadLetterMessageRetentionPeriodSeconds: number;
+  enabled: boolean;
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
@@ -187,6 +188,7 @@ Usage
             kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)
             kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
             deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
+            enabled: true                                    # optional - AWS default is true
             visibilityTimeout: 30                            # optional - AWS default is 30 seconds
             rawMessageDelivery: false                        # optional - default is false
             filterPolicy:
@@ -197,7 +199,6 @@ Usage
     }
 
     const funcNamePascalCase = pascalCase(funcName);
-
     return {
       ...config,
       name: config.name,
@@ -210,6 +211,7 @@ Usage
       kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds:
         config.deadLetterMessageRetentionPeriodSeconds,
+      enabled: config.enabled,
       visibilityTimeout: config.visibilityTimeout,
       rawMessageDelivery:
         config.rawMessageDelivery !== undefined
@@ -223,10 +225,14 @@ Usage
    * events of the Event Queue and handle them.
    *
    * @param {object} template the template which gets mutated
-   * @param {{funcName, name, prefix, batchSize}} config including name of the queue
+   * @param {{funcName, name, prefix, batchSize, enabled}} config including name of the queue
    *  and the resource prefix
    */
-  addEventSourceMapping(template, { funcName, name, batchSize }: Config) {
+  addEventSourceMapping(
+    template,
+    { funcName, name, batchSize, enabled }: Config
+  ) {
+    const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
       DependsOn: "IamRoleLambdaExecution",
@@ -234,7 +240,7 @@ Usage
         BatchSize: batchSize,
         EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
         FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
-        Enabled: "True"
+        Enabled: enabledWithDefault ? "True" : "False"
       }
     };
   }

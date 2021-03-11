@@ -30,6 +30,26 @@ Object {
       },
       "Type": "AWS::SQS::Queue",
     },
+    "undefinedEventSourceMappingSQSsome nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 7,
+        "Enabled": "False",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "undefinedLambdaFunction",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
   },
 }
 `;
@@ -58,6 +78,26 @@ Object {
       },
       "Type": "AWS::SQS::Queue",
     },
+    "undefinedEventSourceMappingSQSsome nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": undefined,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "undefinedLambdaFunction",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
   },
 }
 `;
@@ -85,6 +125,26 @@ Object {
         },
       },
       "Type": "AWS::SQS::Queue",
+    },
+    "undefinedEventSourceMappingSQSsome nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": undefined,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "undefinedLambdaFunction",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
     },
   },
 }

@@ -1022,14 +1022,14 @@
     ramda "^0.26.1"
     semver "^6.1.1"
 
-"@serverless/enterprise-plugin@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@serverless/enterprise-plugin/-/enterprise-plugin-4.5.0.tgz#b6f0789580c1728235cc550be44413441d2fdcc5"
-  integrity sha512-uzWoM5bIXQpdi8bI/NDt353Rr5MF2wBQ0R1ZWrKFSptCIWmYofByqmG2ma6DzJS/u5g0htgucJcIK1ZcrPEd0Q==
+"@serverless/enterprise-plugin@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@serverless/enterprise-plugin/-/enterprise-plugin-4.5.1.tgz#23a4ef4068c7ac76afd05ebcdf0a4942ae488e59"
+  integrity sha512-wDZ/Ulu6PZ30gfiwCZ+CxDDt7fZHgH1wbU3pkBOIWtXpksm2edv+eN4irWwVe93OVUqN3uWEtLZJVZH5YQzf1g==
   dependencies:
     "@serverless/event-mocks" "^1.1.1"
     "@serverless/platform-client" "^4.2.0"
-    "@serverless/utils" "^3.1.0"
+    "@serverless/utils" "^4.0.0"
     chalk "^4.1.0"
     child-process-ext "^2.1.1"
     chokidar "^3.5.1"
@@ -1045,7 +1045,7 @@
     node-fetch "^2.6.1"
     open "^7.4.2"
     semver "^7.3.4"
-    simple-git "^2.36.1"
+    simple-git "^2.37.0"
     uuid "^8.3.2"
     yamljs "^0.3.0"
 
@@ -1912,10 +1912,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.864.0:
-  version "2.865.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.865.0.tgz#e80cc4a07059068d7354f9043df4ede9fbe11a41"
-  integrity sha512-JUaUlGjnJY4Nnd/xnWt8rPmTwebVvA26XfnUM3tyAPtSClwniANkaRq4UdHI0uU3R+V4N2Cuohy8XSLOzBG/4A==
+aws-sdk@^2.865.0:
+  version "2.866.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.866.0.tgz#8150fb2e0cfecd281968edee7cad84598d8d7a09"
+  integrity sha512-6Z581Ek2Yfm78NpeEFMNuSoyiYG7tipEaqfWNFR1AGyYheZwql4ajhzzlpWn91LBpdm7qcFldSNY9U0tKpKWNw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -9058,18 +9058,18 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.2.0, semver@^6.3.0:
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 serverless@^2.19.0:
-  version "2.30.2"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.30.2.tgz#446012bdf450923d3f473fc1f4f2f20fad47dd7c"
-  integrity sha512-sJXQCz9a/BHr53PneoUJLkro5Hk4MQdvPcQ0YKv9LkAR32hfzK5GrjdkA2VtSmsFwe0RCbCkQRemAR6Nyb1ljg==
+  version "2.30.3"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.30.3.tgz#17cadffb17e3b17d9b645bc3e2e8a38a355bb355"
+  integrity sha512-a/81mGvXwzw90iBGKRcXdVw0lKMWzECh/3BpX8BJvgjCSINmUPjA/HSTota2UWTFp7Ne1vuiBEiLT4x8E/6kgQ==
   dependencies:
     "@serverless/cli" "^1.5.2"
     "@serverless/components" "^3.7.3"
-    "@serverless/enterprise-plugin" "^4.5.0"
+    "@serverless/enterprise-plugin" "^4.5.1"
     "@serverless/utils" "^4.0.0"
     ajv "^6.12.6"
     ajv-keywords "^3.5.2"
     archiver "^5.3.0"
-    aws-sdk "^2.864.0"
+    aws-sdk "^2.865.0"
     bluebird "^3.7.2"
     boxen "^5.0.0"
     cachedir "^2.3.0"
@@ -9204,10 +9204,10 @@ simple-get@^2.7.0:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
-simple-git@^2.36.1:
-  version "2.36.1"
-  resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-2.36.1.tgz#70c44d1b8e8a39fbab7d56db4295935b90dd3aaf"
-  integrity sha512-bN18Ea/4IJgqgbZyE9VpVEUkAu9vyP0VWP7acP0CRC1p/N80GGJ0HhIVeFJsm8TdJLBowiJpdLesQuAZ5TFSKw==
+simple-git@^2.37.0:
+  version "2.37.0"
+  resolved "https://registry.yarnpkg.com/simple-git/-/simple-git-2.37.0.tgz#9cf30a1fe6f58453a2ca3e65562428b38ff76f84"
+  integrity sha512-ZK6qRnP+Xa2v23UEZDNHUfzswsuNCDHOQpWZRkpqNaXn7V5wVBBx3zRJLji3pROJGzrzA7mXwY7preL5EKuAaQ==
   dependencies:
     "@kwsites/file-exists" "^1.1.1"
     "@kwsites/promise-deferred" "^1.1.1"

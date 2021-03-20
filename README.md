@@ -53,6 +53,7 @@ functions:
           kmsDataKeyReusePeriodSeconds: 600 # optional - AWS default is 300 seconds
           deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
           rawMessageDelivery: true # Optional - default value is true
+          enabled: true # Optional - default value is true
           filterPolicy: # Optional - filter messages that are handled
             pets:
               - dog

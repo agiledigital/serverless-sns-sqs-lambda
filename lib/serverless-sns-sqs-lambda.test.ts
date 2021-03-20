@@ -76,6 +76,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
       };
       serverlessSnsSqsLambda.addEventQueue(template, testConfig);
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
       expect(template).toMatchSnapshot();
     });
   });
@@ -86,17 +87,20 @@ describe("Test Serverless SNS SQS Lambda", () => {
       const testConfig = {
         name: "some name",
         topicArn: "some arn",
+        batchSize: 7,
         prefix: "some prefix",
         maxRetryCount: 4,
         kmsMasterKeyId: "some key",
         kmsDataKeyReusePeriodSeconds: 200,
         deadLetterMessageRetentionPeriodSeconds: 1209600,
+        enabled: false,
         visibilityTimeout: 999,
         rawMessageDelivery: true,
         filterPolicy: { pet: ["dog", "cat"] }
       };
       serverlessSnsSqsLambda.addEventQueue(template, testConfig);
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
       expect(template).toMatchSnapshot();
     });
   });
@@ -111,6 +115,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
       };
       serverlessSnsSqsLambda.addEventQueue(template, testConfig);
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
       expect(template).toMatchSnapshot();
     });
   });

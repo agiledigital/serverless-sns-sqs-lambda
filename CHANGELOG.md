@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.4.0...v0.5.0) (2021-04-29)
+
+
+### Features
+
+* pass through batching window parameter ([83e2922](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/83e29228e70b351a1e42236a5d7ac32891a01543))
+
 # [0.4.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.3.0...v0.4.0) (2021-04-15)
 
 

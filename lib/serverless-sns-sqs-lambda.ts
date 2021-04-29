@@ -13,6 +13,7 @@ type Config = {
   funcName: string;
   prefix: string;
   batchSize: number;
+  maximumBatchingWindowInSeconds: number;
   maxRetryCount: number;
   kmsMasterKeyId: string;
   kmsDataKeyReusePeriodSeconds: number;
@@ -61,16 +62,19 @@ const pascalCase = camelCase =>
  *         handler: handler.handler
  *         events:
  *           - snsSqs:
- *               name: Event
- *               topicArn: !Ref TopicArn
- *               maxRetryCount: 2                   # optional - default is 5
- *               batchSize: 1                       # optional - default is 10
- *               kmsMasterKeyId: alias/aws/sqs      # optional - default is none (no encryption)
- *               kmsDataKeyReusePeriodSeconds: 600  # optional - AWS default is 300 seconds
- *               filterPolicy:KmsMasterKeyId
- *                 pet:
- *                   - dog
- *                   - cat
+ *             name: ResourcePrefix
+ *             topicArn: ${self:custom.topicArn}
+ *             batchSize: 2
+ *             maximumBatchingWindowInSeconds: 30
+ *             maxRetryCount: 2
+ *             kmsMasterKeyId: alias/aws/sqs
+ *             kmsDataKeyReusePeriodSeconds: 600
+ *             visibilityTimeout: 120
+ *             rawMessageDelivery: true
+ *             filterPolicy:
+ *               pet:
+ *                 - dog
+ *                 - cat
  */
 export default class ServerlessSnsSqsLambda {
   serverless: any;
@@ -185,6 +189,7 @@ Usage
             prefix: some-prefix                              # optional - default is \`\${this.serviceName}-\${stage}-\${funcNamePascalCase}\`
             maxRetryCount: 2                                 # optional - default is 5
             batchSize: 1                                     # optional - default is 10
+            batchWindow: 10                                  # optional - default is 0 (no batch window)
             kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)
             kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
             deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
@@ -230,7 +235,7 @@ Usage
    */
   addEventSourceMapping(
     template,
-    { funcName, name, batchSize, enabled }: Config
+    { funcName, name, batchSize, maximumBatchingWindowInSeconds, enabled }: Config
   ) {
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
@@ -238,6 +243,7 @@ Usage
       DependsOn: "IamRoleLambdaExecution",
       Properties: {
         BatchSize: batchSize,
+        MaximumBatchingWindowInSeconds: maximumBatchingWindowInSeconds !== undefined ? maximumBatchingWindowInSeconds : 0,
         EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
         FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
         Enabled: enabledWithDefault ? "True" : "False"

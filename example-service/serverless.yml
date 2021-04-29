@@ -17,6 +17,7 @@ functions:
           name: ResourcePrefix
           topicArn: ${self:custom.topicArn}
           batchSize: 2
+          maximumBatchingWindowInSeconds: 30
           maxRetryCount: 2
           kmsMasterKeyId: alias/aws/sqs
           kmsDataKeyReusePeriodSeconds: 600

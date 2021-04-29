@@ -48,6 +48,7 @@ functions:
           name: TestEvent # Required - choose a name prefix for the event queue
           topicArn: !Ref Topic # Required - SNS topic to subscribe to
           batchSize: 2 # Optional - default value is 10
+          maximumBatchingWindowInSeconds: 10 # optional - default is 0 (no batch window)
           maxRetryCount: 2 # Optional - default value is 5
           kmsMasterKeyId: alias/aws/sqs # optional - default is none (no encryption)
           kmsDataKeyReusePeriodSeconds: 600 # optional - AWS default is 300 seconds

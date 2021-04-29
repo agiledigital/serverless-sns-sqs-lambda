@@ -88,6 +88,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
         name: "some name",
         topicArn: "some arn",
         batchSize: 7,
+        maximumBatchingWindowInSeconds: 99,
         prefix: "some prefix",
         maxRetryCount: 4,
         kmsMasterKeyId: "some key",

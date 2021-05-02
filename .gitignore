@@ -13,3 +13,7 @@ node_modules
 
 # tsc output
 dist
+
+#misc
+yarn-error.log
+*.tgz

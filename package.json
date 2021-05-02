@@ -6,7 +6,8 @@
   "scripts": {
     "test": "eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib",
     "build": "tsc",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "prepack": "tsc"
   },
   "repository": {
     "type": "git",

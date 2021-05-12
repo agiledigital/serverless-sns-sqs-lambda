@@ -6,40 +6,6 @@ updates:
     interval: daily
     time: "19:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: type-coverage
-    versions:
-    - 2.16.0
-    - 2.16.1
-    - 2.16.2
-    - 2.17.1
-  - dependency-name: serverless
-    versions:
-    - 2.22.0
-    - 2.23.0
-    - 2.25.0
-    - 2.25.1
-    - 2.26.0
-    - 2.27.1
-    - 2.28.0
-    - 2.28.6
-  - dependency-name: "@typescript-eslint/parser"
-    versions:
-    - 4.14.1
-    - 4.15.0
-    - 4.15.2
-    - 4.16.0
-  - dependency-name: "@typescript-eslint/eslint-plugin"
-    versions:
-    - 4.15.0
-    - 4.15.2
-    - 4.16.0
-  - dependency-name: ts-jest
-    versions:
-    - 26.5.1
-  - dependency-name: typescript
-    versions:
-    - 4.1.4
-  - dependency-name: semantic-release
-    versions:
-    - 17.3.8
+  labels:
+    - "dependencies"
+    - "automerge" # Used by Kodiak to work out what to automerge

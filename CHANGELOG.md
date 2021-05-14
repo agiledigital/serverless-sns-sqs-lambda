@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.5.0...v0.6.0) (2021-05-14)
+
+
+### Features
+
+* allow CloudFormation overrides ([6d80b18](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/6d80b18adb6b13a5624177c619f3c6d251da6aea)), closes [#213](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/213)
+
 # [0.5.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.4.0...v0.5.0) (2021-04-29)
 
 

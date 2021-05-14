@@ -17,3 +17,6 @@ dist
 #misc
 yarn-error.log
 *.tgz
+
+# workflow specific files
+.envrc

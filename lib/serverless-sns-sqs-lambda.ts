@@ -1,3 +1,4 @@
+import { JsonObject } from "type-fest";
 // Future work: Properly type the file
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -22,6 +23,11 @@ type Config = {
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
+
+  mainQueueOverride: JsonObject;
+  deadLetterQueueOverride: JsonObject;
+  eventSourceMappingOverride: JsonObject;
+  subscriptionOverride: JsonObject;
 };
 
 /**
@@ -47,8 +53,17 @@ const parseIntOr = (intString, defaultInt) => {
  *
  * @param {string} camelCase camelCase string
  */
-const pascalCase = camelCase =>
+const pascalCase = (camelCase: string): string =>
   camelCase.slice(0, 1).toUpperCase() + camelCase.slice(1);
+
+const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
+  Object.keys(jsonObject).reduce(
+    (acc, key) => ({
+      ...acc,
+      [pascalCase(key)]: jsonObject[key]
+    }),
+    {}
+  );
 
 /**
  * The ServerlessSnsSqsLambda plugin looks for functions that contain an
@@ -200,6 +215,25 @@ Usage
               pet:
                 - dog
                 - cat
+
+            # Overrides for generated CloudFormation templates
+            # Mirrors the CloudFormation docs but uses camel case instead of title case
+            #
+            #
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+            mainQueueOverride:
+              maximumMessageSize: 1024
+              ...
+            deadLetterQueueOverride:
+              maximumMessageSize: 1024
+              ...
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html
+            eventSourceMappingOverride:
+              bisectBatchOnFunctionError: true
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
+            subscriptionOverride:
+              rawMessageDelivery: true
+
 `);
     }
 
@@ -221,7 +255,11 @@ Usage
       rawMessageDelivery:
         config.rawMessageDelivery !== undefined
           ? config.rawMessageDelivery
-          : false
+          : false,
+      mainQueueOverride: config.mainQueueOverride ?? {},
+      deadLetterQueueOverride: config.deadLetterQueueOverride ?? {},
+      eventSourceMappingOverride: config.eventSourceMappingOverride ?? {},
+      subscriptionOverride: config.subscriptionOverride ?? {}
     };
   }
 
@@ -235,7 +273,14 @@ Usage
    */
   addEventSourceMapping(
     template,
-    { funcName, name, batchSize, maximumBatchingWindowInSeconds, enabled }: Config
+    {
+      funcName,
+      name,
+      batchSize,
+      maximumBatchingWindowInSeconds,
+      enabled,
+      eventSourceMappingOverride
+    }: Config
   ) {
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
@@ -243,10 +288,14 @@ Usage
       DependsOn: "IamRoleLambdaExecution",
       Properties: {
         BatchSize: batchSize,
-        MaximumBatchingWindowInSeconds: maximumBatchingWindowInSeconds !== undefined ? maximumBatchingWindowInSeconds : 0,
+        MaximumBatchingWindowInSeconds:
+          maximumBatchingWindowInSeconds !== undefined
+            ? maximumBatchingWindowInSeconds
+            : 0,
         EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
         FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
-        Enabled: enabledWithDefault ? "True" : "False"
+        Enabled: enabledWithDefault ? "True" : "False",
+        ...pascalCaseAllKeys(eventSourceMappingOverride)
       }
     };
   }
@@ -266,7 +315,8 @@ Usage
       prefix,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
-      deadLetterMessageRetentionPeriodSeconds
+      deadLetterMessageRetentionPeriodSeconds,
+      deadLetterQueueOverride
     }
   ) {
     template.Resources[`${name}DeadLetterQueue`] = {
@@ -287,7 +337,8 @@ Usage
           ? {
               MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
             }
-          : {})
+          : {}),
+        ...pascalCaseAllKeys(deadLetterQueueOverride)
       }
     };
   }
@@ -308,7 +359,8 @@ Usage
       maxRetryCount,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
-      visibilityTimeout
+      visibilityTimeout,
+      mainQueueOverride
     }: Config
   ) {
     template.Resources[`${name}Queue`] = {
@@ -335,7 +387,8 @@ Usage
           ? {
               VisibilityTimeout: visibilityTimeout
             }
-          : {})
+          : {}),
+        ...pascalCaseAllKeys(mainQueueOverride)
       }
     };
   }
@@ -379,7 +432,13 @@ Usage
    */
   addTopicSubscription(
     template,
-    { name, topicArn, filterPolicy, rawMessageDelivery }: Config
+    {
+      name,
+      topicArn,
+      filterPolicy,
+      rawMessageDelivery,
+      subscriptionOverride
+    }: Config
   ) {
     template.Resources[`Subscribe${name}Topic`] = {
       Type: "AWS::SNS::Subscription",
@@ -392,7 +451,8 @@ Usage
           ? {
               RawMessageDelivery: rawMessageDelivery
             }
-          : {})
+          : {}),
+        ...pascalCaseAllKeys(subscriptionOverride)
       }
     };
   }

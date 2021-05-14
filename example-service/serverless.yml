@@ -28,6 +28,22 @@ functions:
               - dog
               - cat
 
+          # Overrides for generated CloudFormation templates
+          # Mirrors the CloudFormation docs but uses camel case instead of title case
+          #
+          #
+          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+          mainQueueOverride:
+            maximumMessageSize: 1024
+          deadLetterQueueOverride:
+            delaySeconds: 120
+          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html
+          eventSourceMappingOverride:
+            enabled: false
+          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
+          subscriptionOverride:
+            rawMessageDelivery: true
+
 resources:
   Resources:
     Topic:

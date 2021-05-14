@@ -3,24 +3,65 @@
 exports[`Test Serverless SNS SQS Lambda when all parameters are provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
-    "some nameDeadLetterQueue": Object {
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FilterPolicy": Object {
+          "pet": Array [
+            "dog",
+            "cat",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": true,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 7,
+        "Enabled": "False",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 99,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
       "Properties": Object {
         "KmsDataKeyReusePeriodSeconds": 200,
         "KmsMasterKeyId": "some key",
         "MessageRetentionPeriod": 1209600,
-        "QueueName": "some prefixsome nameDeadLetterQueue",
+        "QueueName": "some prefixsome-nameDeadLetterQueue",
       },
       "Type": "AWS::SQS::Queue",
     },
-    "some nameQueue": Object {
+    "some-nameQueue": Object {
       "Properties": Object {
         "KmsDataKeyReusePeriodSeconds": 200,
         "KmsMasterKeyId": "some key",
-        "QueueName": "some prefixsome nameQueue",
+        "QueueName": "some prefixsome-nameQueue",
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [
-              "some nameDeadLetterQueue",
+              "some-nameDeadLetterQueue",
               "Arn",
             ],
           },
@@ -30,27 +71,6 @@ Object {
       },
       "Type": "AWS::SQS::Queue",
     },
-    "undefinedEventSourceMappingSQSsome nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
-      "Properties": Object {
-        "BatchSize": 7,
-        "Enabled": "False",
-        "EventSourceArn": Object {
-          "Fn::GetAtt": Array [
-            "some nameQueue",
-            "Arn",
-          ],
-        },
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "undefinedLambdaFunction",
-            "Arn",
-          ],
-        },
-        "MaximumBatchingWindowInSeconds": 99,
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
   },
 }
 `;
@@ -58,19 +78,54 @@ Object {
 exports[`Test Serverless SNS SQS Lambda when encryption parameters are not provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
-    "some nameDeadLetterQueue": Object {
+    "Subscribesome-nameTopic": Object {
       "Properties": Object {
-        "QueueName": "some prefixsome nameDeadLetterQueue",
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "QueueName": "some prefixsome-nameDeadLetterQueue",
       },
       "Type": "AWS::SQS::Queue",
     },
-    "some nameQueue": Object {
+    "some-nameQueue": Object {
       "Properties": Object {
-        "QueueName": "some prefixsome nameQueue",
+        "QueueName": "some prefixsome-nameQueue",
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [
-              "some nameDeadLetterQueue",
+              "some-nameDeadLetterQueue",
               "Arn",
             ],
           },
@@ -79,27 +134,6 @@ Object {
       },
       "Type": "AWS::SQS::Queue",
     },
-    "undefinedEventSourceMappingSQSsome nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
-      "Properties": Object {
-        "BatchSize": undefined,
-        "Enabled": "True",
-        "EventSourceArn": Object {
-          "Fn::GetAtt": Array [
-            "some nameQueue",
-            "Arn",
-          ],
-        },
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "undefinedLambdaFunction",
-            "Arn",
-          ],
-        },
-        "MaximumBatchingWindowInSeconds": 0,
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
   },
 }
 `;
@@ -107,47 +141,126 @@ Object {
 exports[`Test Serverless SNS SQS Lambda when no optional parameters are provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
-    "some nameDeadLetterQueue": Object {
+    "Subscribesome-nameTopic": Object {
       "Properties": Object {
-        "QueueName": "undefinedsome nameDeadLetterQueue",
-      },
-      "Type": "AWS::SQS::Queue",
-    },
-    "some nameQueue": Object {
-      "Properties": Object {
-        "QueueName": "undefinedsome nameQueue",
-        "RedrivePolicy": Object {
-          "deadLetterTargetArn": Object {
-            "Fn::GetAtt": Array [
-              "some nameDeadLetterQueue",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": undefined,
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
         },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
       },
-      "Type": "AWS::SQS::Queue",
+      "Type": "AWS::SNS::Subscription",
     },
-    "undefinedEventSourceMappingSQSsome nameQueue": Object {
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
       "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
-        "BatchSize": undefined,
+        "BatchSize": 10,
         "Enabled": "True",
         "EventSourceArn": Object {
           "Fn::GetAtt": Array [
-            "some nameQueue",
+            "some-nameQueue",
             "Arn",
           ],
         },
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "undefinedLambdaFunction",
+            "Test-functionLambdaFunction",
             "Arn",
           ],
         },
         "MaximumBatchingWindowInSeconds": 0,
       },
       "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "QueueName": "null-test-stage-Test-functionsome-nameDeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "QueueName": "null-test-stage-Test-functionsome-nameQueue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+  },
+}
+`;
+
+exports[`Test Serverless SNS SQS Lambda when overriding the generated CloudFormation template the overrides should take precedence 1`] = `
+Object {
+  "Resources": Object {
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": false,
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "MessageRetentionPeriod": 1000,
+        "QueueName": "some prefixsome-nameDeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "QueueName": "some prefixsome-nameQueue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 4,
+        },
+        "VisibilityTimeout": 4321,
+      },
+      "Type": "AWS::SQS::Queue",
     },
   },
 }

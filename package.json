@@ -6,7 +6,8 @@
   "scripts": {
     "test": "eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib",
     "build": "tsc",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "prepack": "tsc"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "serverless": "^2.19.0",
     "ts-jest": "^26.4.3",
     "type-coverage": "^2.14.0",
+    "type-fest": "^1.0.2",
     "typescript": "^4.0.5"
   },
   "peerDependencies": {

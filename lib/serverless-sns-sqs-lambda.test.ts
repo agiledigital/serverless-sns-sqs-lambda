@@ -71,12 +71,18 @@ describe("Test Serverless SNS SQS Lambda", () => {
     it("should produce valid SQS CF template items", () => {
       const template = { Resources: {} };
       const testConfig = {
-        name: "some name",
-        topicArn: "some arn"
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
       };
-      serverlessSnsSqsLambda.addEventQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });
@@ -85,8 +91,8 @@ describe("Test Serverless SNS SQS Lambda", () => {
     it("should produce valid SQS CF template items", () => {
       const template = { Resources: {} };
       const testConfig = {
-        name: "some name",
-        topicArn: "some arn",
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
         batchSize: 7,
         maximumBatchingWindowInSeconds: 99,
         prefix: "some prefix",
@@ -99,9 +105,15 @@ describe("Test Serverless SNS SQS Lambda", () => {
         rawMessageDelivery: true,
         filterPolicy: { pet: ["dog", "cat"] }
       };
-      serverlessSnsSqsLambda.addEventQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });
@@ -110,13 +122,59 @@ describe("Test Serverless SNS SQS Lambda", () => {
     it("should produce valid SQS CF template items", () => {
       const template = { Resources: {} };
       const testConfig = {
-        name: "some name",
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
         prefix: "some prefix",
         maxRetryCount: 4
       };
-      serverlessSnsSqsLambda.addEventQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, testConfig);
-      serverlessSnsSqsLambda.addEventSourceMapping(template, testConfig);
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      expect(template).toMatchSnapshot();
+    });
+  });
+
+  describe("when overriding the generated CloudFormation template", () => {
+    it("the overrides should take precedence", () => {
+      const template = { Resources: {} };
+      const testConfig = {
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+        prefix: "some prefix",
+        maxRetryCount: 4,
+        enabled: true,
+        visibilityTimeout: 1234,
+        deadLetterMessageRetentionPeriodSeconds: 120,
+        rawMessageDelivery: true,
+        mainQueueOverride: {
+          visibilityTimeout: 4321
+        },
+        deadLetterQueueOverride: {
+          MessageRetentionPeriod: 1000
+        },
+        eventSourceMappingOverride: {
+          Enabled: false
+        },
+        subscriptionOverride: {
+          rawMessageDelivery: false
+        }
+      };
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+
       expect(template).toMatchSnapshot();
     });
   });

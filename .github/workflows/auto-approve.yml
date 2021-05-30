@@ -1,12 +1,14 @@
-name: Auto Approve Dependabot PRs
+name: auto-merge
 
-on: pull_request_target
+on:
+  pull_request:
 
 jobs:
-  auto-approve:
+  auto-merge:
     runs-on: ubuntu-latest
     steps:
-      - uses: hmarr/auto-approve-action@v2.0.0
-        if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+      - uses: actions/checkout@v2
+      - uses: ahmadnassri/action-dependabot-auto-merge@v2
         with:
-          github-token: "${{ secrets.GH_TOKEN }}"
+          target: minor
+          github-token: ${{ secrets.GH_TOKEN }}

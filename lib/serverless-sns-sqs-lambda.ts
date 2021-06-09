@@ -84,8 +84,10 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
  *             maxRetryCount: 2
  *             kmsMasterKeyId: alias/aws/sqs
  *             kmsDataKeyReusePeriodSeconds: 600
+ *             deadLetterMessageRetentionPeriodSeconds: 1209600
  *             visibilityTimeout: 120
  *             rawMessageDelivery: true
+ *             enabled: false
  *             filterPolicy:
  *               pet:
  *                 - dog
@@ -109,6 +111,48 @@ export default class ServerlessSnsSqsLambda {
     this.provider = serverless ? serverless.getProvider("aws") : null;
     this.custom = serverless.service ? serverless.service.custom : null;
     this.serviceName = serverless.service.service;
+
+    serverless.configSchemaHandler.defineFunctionEvent("aws", "snsSqs", {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        topicArn: { $ref: "#/definitions/awsArn" },
+        batchSize: { type: "number", minimum: 1, maximum: 10000 },
+        maximumBatchingWindowInSeconds: {
+          type: "number",
+          minimum: 0,
+          maximum: 300
+        },
+        maxRetryCount: { type: "number" },
+        kmsMasterKeyId: {
+          anyOf: [{ type: "string" }, { $ref: "#/definitions/awsArn" }]
+        },
+        kmsDataKeyReusePeriodSeconds: {
+          type: "number",
+          minimum: 60,
+          maximum: 86400
+        },
+        visibilityTimeout: {
+          type: "number",
+          minimum: 0,
+          maximum: 43200
+        },
+        deadLetterMessageRetentionPeriodSeconds: {
+          type: "number",
+          minimum: 60,
+          maximum: 1209600
+        },
+        rawMessageDelivery: { type: "boolean" },
+        enabled: { type: "boolean" },
+        filterPolicy: { type: "object" },
+        mainQueueOverride: { type: "object" },
+        deadLetterQueueOverride: { type: "object" },
+        eventSourceMappingOverride: { type: "object" },
+        subscriptionOverride: { type: "object" }
+      },
+      required: ["name", "topicArn"],
+      additionalProperties: false
+    });
 
     if (!this.provider) {
       throw new Error("This plugin must be used with AWS");

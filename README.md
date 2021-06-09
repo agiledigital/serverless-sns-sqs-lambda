@@ -51,6 +51,7 @@ functions:
           kmsMasterKeyId: alias/aws/sqs # optional - default is none (no encryption)
           kmsDataKeyReusePeriodSeconds: 600 # optional - AWS default is 300 seconds
           deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
+          visibilityTimeout: 120 # optional (in seconds) - AWS default is 30 secs
           rawMessageDelivery: true # Optional - default value is true
           enabled: true # Optional - default value is true
           filterPolicy: # Optional - filter messages that are handled

@@ -1,7 +1,7 @@
 service: sns-sqs-service
 # Opt-in to the strict config validation that will be default in v3
 # See: https://www.serverless.com/framework/docs/deprecations/#new-variables-resolver
-variablesResolutionMode: 20210326
+variablesResolutionMode: 20210219
 # Ensure validation issues are treated as errors
 configValidationMode: error
 

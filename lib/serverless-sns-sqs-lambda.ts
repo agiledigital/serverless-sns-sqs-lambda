@@ -18,6 +18,11 @@ type Config = {
   maxRetryCount: number;
   kmsMasterKeyId: string;
   kmsDataKeyReusePeriodSeconds: number;
+  // **** FIFO setting **** //
+  fifoQueue: boolean;
+  fifoThroughputLimit: string; // perQueue ||  perMessageGroupId
+  deduplicationScope: string; // queue || messageGroup, just not setting here
+  // **** FIFO setting **** //
   deadLetterMessageRetentionPeriodSeconds: number;
   enabled: boolean;
   visibilityTimeout: number;
@@ -84,6 +89,9 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
  *             maxRetryCount: 2
  *             kmsMasterKeyId: alias/aws/sqs
  *             kmsDataKeyReusePeriodSeconds: 600
+ *             fifoQueue: true,
+ *             fifoThroughputLimit: perMessageGroupId,
+ *             deduplicationScope: messageGroup,
  *             deadLetterMessageRetentionPeriodSeconds: 1209600
  *             visibilityTimeout: 120
  *             rawMessageDelivery: true
@@ -142,6 +150,9 @@ export default class ServerlessSnsSqsLambda {
           minimum: 60,
           maximum: 1209600
         },
+        fifoQueue: { type: "boolean" },
+        fifoThroughputLimit: { type: "string" },
+        deduplicationScope: { type: "string" },
         rawMessageDelivery: { type: "boolean" },
         enabled: { type: "boolean" },
         filterPolicy: { type: "object" },
@@ -159,9 +170,8 @@ export default class ServerlessSnsSqsLambda {
     }
 
     this.hooks = {
-      "aws:package:finalize:mergeCustomProviderResources": this.modifyTemplate.bind(
-        this
-      )
+      "aws:package:finalize:mergeCustomProviderResources":
+        this.modifyTemplate.bind(this)
     };
   }
 
@@ -173,8 +183,8 @@ export default class ServerlessSnsSqsLambda {
   modifyTemplate() {
     const functions = this.serverless.service.functions;
     const stage = this.serverless.service.provider.stage;
-    const template = this.serverless.service.provider
-      .compiledCloudFormationTemplate;
+    const template =
+      this.serverless.service.provider.compiledCloudFormationTemplate;
 
     Object.keys(functions).forEach(funcKey => {
       const func = functions[funcKey];
@@ -251,6 +261,9 @@ Usage
             batchWindow: 10                                  # optional - default is 0 (no batch window)
             kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)
             kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
+            fifoQueue: true;                                 # optional - AWS default is false
+            fifoThroughputLimit: perMessageGroupId;          # optional - value : perQueue || perMessageGroupId
+            deduplicationScope: messageGroup;                # optional - value : queue || messageGroup
             deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
             enabled: true                                    # optional - AWS default is true
             visibilityTimeout: 30                            # optional - AWS default is 30 seconds
@@ -292,6 +305,9 @@ Usage
       maxRetryCount: parseIntOr(config.maxRetryCount, 5),
       kmsMasterKeyId: config.kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds,
+      fifoQueue: config.fifoQueue,
+      fifoThroughputLimit: config.fifoThroughputLimit,
+      deduplicationScope: config.deduplicationScope,
       deadLetterMessageRetentionPeriodSeconds:
         config.deadLetterMessageRetentionPeriodSeconds,
       enabled: config.enabled,
@@ -348,8 +364,11 @@ Usage
    * Add the Dead Letter Queue which will collect failed messages for later
    * inspection and handling.
    *
+   * ** DLQ of FIFO must also be a FIFO queue
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+   *
    * @param {object} template the template which gets mutated
-   * @param {{name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, deadLetterMessageRetentionPeriodSeconds }} config including name of the queue
+   * @param {{name, prefix, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, fifoQueue, fifoThroughputLimit, deduplicationScope, deadLetterMessageRetentionPeriodSeconds }} config including name of the queue
    *  and the resource prefix
    */
   addEventDeadLetterQueue(
@@ -359,6 +378,9 @@ Usage
       prefix,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
+      fifoQueue,
+      fifoThroughputLimit,
+      deduplicationScope,
       deadLetterMessageRetentionPeriodSeconds,
       deadLetterQueueOverride
     }
@@ -377,6 +399,21 @@ Usage
               KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
             }
           : {}),
+        ...(fifoQueue !== undefined
+          ? {
+              FifoQueue: fifoQueue
+            }
+          : {}),
+        ...(fifoThroughputLimit !== undefined
+          ? {
+              FifoThroughputLimit: fifoThroughputLimit
+            }
+          : {}),
+        ...(deduplicationScope !== undefined
+          ? {
+              DeduplicationScope: deduplicationScope
+            }
+          : {}),
         ...(deadLetterMessageRetentionPeriodSeconds !== undefined
           ? {
               MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
@@ -392,7 +429,7 @@ Usage
    * from SNS as they arrive, holding them for processing.
    *
    * @param {object} template the template which gets mutated
-   * @param {{name, prefix, maxRetryCount, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, visibilityTimeout}} config including name of the queue,
+   * @param {{name, prefix, maxRetryCount, kmsMasterKeyId, kmsDataKeyReusePeriodSeconds, fifoQueue, fifoThroughputLimit, deduplicationScope, visibilityTimeout}} config including name of the queue,
    *  the resource prefix and the max retry count for message handler failures.
    */
   addEventQueue(
@@ -403,6 +440,9 @@ Usage
       maxRetryCount,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
+      fifoQueue,
+      fifoThroughputLimit,
+      deduplicationScope,
       visibilityTimeout,
       mainQueueOverride
     }: Config
@@ -425,6 +465,21 @@ Usage
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
               KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
+          : {}),
+        ...(fifoQueue !== undefined
+          ? {
+              FifoQueue: fifoQueue
+            }
+          : {}),
+        ...(fifoThroughputLimit !== undefined
+          ? {
+              FifoThroughputLimit: fifoThroughputLimit
+            }
+          : {}),
+        ...(deduplicationScope !== undefined
+          ? {
+              DeduplicationScope: deduplicationScope
             }
           : {}),
         ...(visibilityTimeout !== undefined

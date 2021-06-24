@@ -89,6 +89,70 @@ plugins:
   - "@agiledigital/serverless-sns-sqs-lambda"
 ```
 
+FIFO example,
+
+     This feature provides higher transactions per second (TPS) for messages in FIFO queues. To use high throughput FIFO, enable this option. Enabling high throughput FIFO sets the related options as follows:
+        deduplicationScope is set to messageGroup.
+        fifoThroughputLimit is set to perMessageGroupId.
+
+- \*\* DLQ of FIFO must also be a FIFO queue
+- @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html
+
+```yml
+functions:
+  processEvent:
+    handler: handler.handler
+    events:
+      - snsSqs:
+          name: TestEvent # Required - choose a name prefix for the event queue
+          topicArn: !Ref Topic # Required - SNS topic to subscribe to
+          batchSize: 2 # Optional - default value is 10
+          maximumBatchingWindowInSeconds: 10 # optional - default is 0 (no batch window)
+          maxRetryCount: 2 # Optional - default value is 5
+          kmsMasterKeyId: alias/aws/sqs # optional - default is none (no encryption)
+          kmsDataKeyReusePeriodSeconds: 600 # optional - AWS default is 300 seconds
+          fifoQueue: true;                                 # optional - AWS default is false
+          fifoThroughputLimit: perMessageGroupId;          # optional - value : perQueue || perMessageGroupId
+          deduplicationScope: messageGroup;                # optional - value : queue || messageGroup
+          deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
+          visibilityTimeout: 120 # optional (in seconds) - AWS default is 30 secs
+          rawMessageDelivery: true # Optional - default value is true
+          enabled: true # Optional - default value is true
+          filterPolicy: # Optional - filter messages that are handled
+            pets:
+              - dog
+              - cat
+
+            # Overrides for generated CloudFormation templates
+            # Mirrors the CloudFormation docs but uses camel case instead of title case
+            #
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
+            mainQueueOverride:
+              maximumMessageSize: 1024
+              ...
+            deadLetterQueueOverride:
+              maximumMessageSize: 1024
+              ...
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html
+            eventSourceMappingOverride:
+              sourceAccessConfigurations:
+                - Type: SASL_SCRAM_256_AUTH
+                  URI: arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
+            subscriptionOverride:
+              region: ap-southeast-2
+
+resources:
+  Resources:
+    Topic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: TestTopic
+
+plugins:
+  - "@agiledigital/serverless-sns-sqs-lambda"
+```
+
 ### CloudFormation Overrides
 
 If you would like to override a part of the CloudFormation template

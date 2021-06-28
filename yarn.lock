@@ -1025,10 +1025,10 @@
     ramda "^0.26.1"
     semver "^6.1.1"
 
-"@serverless/dashboard-plugin@^5.4.0":
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/@serverless/dashboard-plugin/-/dashboard-plugin-5.4.1.tgz#50e3387824bd299556c925cc8becda0818d18549"
-  integrity sha512-lOj6jJIzZEPfiaMi70HNWD2uFd8+hzfAArsprtDvsek2H+1JSQ8I4vCtlLOf/X0hQn3sIHI7JQizathkzXkBrg==
+"@serverless/dashboard-plugin@^5.4.2":
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/@serverless/dashboard-plugin/-/dashboard-plugin-5.4.2.tgz#afad1ce3a38d6563cb3d57d8122f9a9906178ebf"
+  integrity sha512-yFugs3TBPjZh6Gt/8lPca8H7n2/ICin17r/zmhiOhIscYMgIJT1EOY9EyCFWIQi9AMAmZD0a3ZR8U8gSYYTT9A==
   dependencies:
     "@serverless/event-mocks" "^1.1.1"
     "@serverless/platform-client" "^4.2.3"
@@ -1992,10 +1992,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.931.0:
-  version "2.932.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.932.0.tgz#43da32ab6de58a0eac6c7976feb6c9879fe09e7c"
-  integrity sha512-U6MWUtFD0npWa+ReVEgm0fCIM0fMOYahFp14GLv8fC+BWOTvh5Iwt/gF8NrLomx42bBjA1Abaw6yhmiaSJDQHQ==
+aws-sdk@^2.934.0:
+  version "2.936.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.936.0.tgz#b69f5db7c0c745f260b014415a8fbfb38c5e615d"
+  integrity sha512-X0kuyycck0fEPN5V0Vw1PmPIQ4BO0qupsL1El5jnXzXxNkf1cOmn5PMSxPXPsdcqua4w4h3sf143/yME0V9w8g==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -9115,18 +9115,18 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.2.0, semver@^6.3.0:
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 serverless@^2.19.0:
-  version "2.48.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.48.0.tgz#1f0f09da81f8a1f55b7bdcf90677b5f2064befbb"
-  integrity sha512-1CGCKr+7226psdyuGYFC54khCMUUBlLt2QPEAZtY00ZHMy8yOxvjMXAdfHAVnCdo+YH419MW3jFJhGuwVUsDyw==
+  version "2.48.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.48.1.tgz#c7f6e8358103b1cd2a7bf6c1f12b544fb500d2e5"
+  integrity sha512-G61WEeJwDWsmsXW3jBzYnnNOJzw3ysqL5/3b0UHy1Zi8RhpkzzI9J7poteJHVmDchw9Ru5tczIKYq2dCfufxsA==
   dependencies:
     "@serverless/cli" "^1.5.2"
     "@serverless/components" "^3.12.0"
-    "@serverless/dashboard-plugin" "^5.4.0"
+    "@serverless/dashboard-plugin" "^5.4.2"
     "@serverless/utils" "^5.3.0"
     ajv "^6.12.6"
     ajv-keywords "^3.5.2"
     archiver "^5.3.0"
-    aws-sdk "^2.931.0"
+    aws-sdk "^2.934.0"
     bluebird "^3.7.2"
     boxen "^5.0.1"
     cachedir "^2.3.0"

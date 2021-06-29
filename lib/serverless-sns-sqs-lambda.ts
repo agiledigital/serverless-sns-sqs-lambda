@@ -159,9 +159,8 @@ export default class ServerlessSnsSqsLambda {
     }
 
     this.hooks = {
-      "aws:package:finalize:mergeCustomProviderResources": this.modifyTemplate.bind(
-        this
-      )
+      "aws:package:finalize:mergeCustomProviderResources":
+        this.modifyTemplate.bind(this)
     };
   }
 
@@ -173,8 +172,8 @@ export default class ServerlessSnsSqsLambda {
   modifyTemplate() {
     const functions = this.serverless.service.functions;
     const stage = this.serverless.service.provider.stage;
-    const template = this.serverless.service.provider
-      .compiledCloudFormationTemplate;
+    const template =
+      this.serverless.service.provider.compiledCloudFormationTemplate;
 
     Object.keys(functions).forEach(funcKey => {
       const func = functions[funcKey];

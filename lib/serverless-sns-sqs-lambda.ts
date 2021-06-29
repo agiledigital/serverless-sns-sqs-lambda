@@ -455,7 +455,7 @@ Usage
             {
               Sid: `${prefix}${name}Sid`,
               Effect: "Allow",
-              Principal: { AWS: "*" },
+              Principal: { Service: "sns.amazonaws.com" },
               Action: "SQS:SendMessage",
               Resource: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
               Condition: { ArnEquals: { "aws:SourceArn": [topicArn] } }

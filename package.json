@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib",
+    "format": "prettier --write 'lib/**/*.{ts,tsx,yaml,yml,js,json}'",
     "build": "tsc",
     "commit": "git-cz",
     "prepack": "tsc"

@@ -30,7 +30,7 @@
   "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme",
   "devDependencies": {
     "@jedmao/semantic-release-npm-github-config": "^1.0.9",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
     "ajv": "^8.6.0",

@@ -20,6 +20,7 @@ type Config = {
   kmsDataKeyReusePeriodSeconds: number;
   deadLetterMessageRetentionPeriodSeconds: number;
   enabled: boolean;
+  fifo: boolean;
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
@@ -88,6 +89,7 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
  *             visibilityTimeout: 120
  *             rawMessageDelivery: true
  *             enabled: false
+ *             fifo: false
  *             filterPolicy:
  *               pet:
  *                 - dog
@@ -144,6 +146,7 @@ export default class ServerlessSnsSqsLambda {
         },
         rawMessageDelivery: { type: "boolean" },
         enabled: { type: "boolean" },
+        fifo: { type: "boolean" },
         filterPolicy: { type: "object" },
         mainQueueOverride: { type: "object" },
         deadLetterQueueOverride: { type: "object" },
@@ -252,6 +255,7 @@ Usage
             kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
             deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
             enabled: true                                    # optional - AWS default is true
+            fifo: false                                      # optional - AWS default is false
             visibilityTimeout: 30                            # optional - AWS default is 30 seconds
             rawMessageDelivery: false                        # optional - default is false
             filterPolicy:
@@ -294,6 +298,7 @@ Usage
       deadLetterMessageRetentionPeriodSeconds:
         config.deadLetterMessageRetentionPeriodSeconds,
       enabled: config.enabled,
+      fifo: config.fifo !== undefined ? config.fifo : false,
       visibilityTimeout: config.visibilityTimeout,
       rawMessageDelivery:
         config.rawMessageDelivery !== undefined
@@ -356,6 +361,7 @@ Usage
     {
       name,
       prefix,
+      fifo,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds,
@@ -365,7 +371,8 @@ Usage
     template.Resources[`${name}DeadLetterQueue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}DeadLetterQueue`,
+        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`,
+        ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
               KmsMasterKeyId: kmsMasterKeyId
@@ -399,6 +406,7 @@ Usage
     {
       name,
       prefix,
+      fifo,
       maxRetryCount,
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
@@ -409,7 +417,8 @@ Usage
     template.Resources[`${name}Queue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}Queue`,
+        QueueName: `${prefix}${name}Queue${fifo ? '.fifo' : ''}`,
+        ...(fifo ? { FifoQueue: true } : {}),
         RedrivePolicy: {
           deadLetterTargetArn: {
             "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
@@ -506,7 +515,7 @@ Usage
    * @param {object} template the template which gets mutated
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
-  addLambdaSqsPermissions(template, { name, prefix }) {
+  addLambdaSqsPermissions(template, { name, prefix, fifo }) {
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",
@@ -517,10 +526,10 @@ Usage
         ],
         Resource: [
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${fifo ? '.fifo' : ''}`
           },
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`
           }
         ]
       }

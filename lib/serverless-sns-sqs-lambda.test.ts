@@ -178,4 +178,25 @@ describe("Test Serverless SNS SQS Lambda", () => {
       expect(template).toMatchSnapshot();
     });
   });
+
+  describe("when fifo is true", () => {
+    it("should produce valid fifo queues", () => {
+      const template = { Resources: {} };
+      const testConfig = {
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+        fifo: true,
+      };
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      expect(template).toMatchSnapshot();
+    });
+  });
 });

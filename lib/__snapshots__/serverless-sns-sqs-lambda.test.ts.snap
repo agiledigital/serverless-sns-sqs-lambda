@@ -265,3 +265,68 @@ Object {
   },
 }
 `;
+
+exports[`Test Serverless SNS SQS Lambda when fifo is true should produce valid fifo queues 1`] = `
+Object {
+  "Resources": Object {
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "FifoQueue": true,
+        "QueueName": "null-test-stage-Test-functionsome-nameDeadLetterQueue.fifo",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "FifoQueue": true,
+        "QueueName": "null-test-stage-Test-functionsome-nameQueue.fifo",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+  },
+}
+`;

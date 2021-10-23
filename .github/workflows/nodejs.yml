@@ -39,6 +39,8 @@ jobs:
         run: yarn type-coverage
       - name: Test
         run: yarn test --coverage
+      - name: Check formatting
+        run: yarn format-check
       - name: Package example service to ensure compatibility
         run: cd example-service && yarn install --frozen-lockfile && yarn sls package
       - name: Run Semantic Release

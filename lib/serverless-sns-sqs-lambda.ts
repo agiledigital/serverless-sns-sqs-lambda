@@ -333,7 +333,6 @@ Usage
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
-      DependsOn: "IamRoleLambdaExecution",
       Properties: {
         BatchSize: batchSize,
         MaximumBatchingWindowInSeconds:

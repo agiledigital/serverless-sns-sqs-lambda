@@ -41,9 +41,6 @@ jobs:
         run: yarn test --coverage
       - name: Check formatting
         run: yarn format-check
-      - name: Check commit messages
-        run: yarn commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD
-        if: github.event_name == 'pull_request'
       - name: Package example service to ensure compatibility
         run: cd example-service && yarn install --frozen-lockfile && yarn sls package
       - name: Run Semantic Release

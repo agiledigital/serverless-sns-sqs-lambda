@@ -65,7 +65,7 @@
     "dist"
   ],
   "typeCoverage": {
-    "atLeast": 61.49,
+    "atLeast": 61,
     "strict": true,
     "detail": true
   }

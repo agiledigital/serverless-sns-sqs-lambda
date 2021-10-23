@@ -10,6 +10,58 @@ const slsOpt = {
   region: "ap-southeast-2"
 };
 
+/**
+ * Returns a resource that looks like what Serverless generates when not using
+ * a custom execution role ARN.
+ *
+ * It would be better to get Serverless to generate this for us but we don't
+ * run in a serverless context at the moment so this is the best we have.
+ */
+const generateIamLambdaExecutionRole = () => ({
+  IamRoleLambdaExecution: {
+    Type: "AWS::IAM::Role",
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: ["lambda.amazonaws.com"]
+            },
+            Action: ["sts:AssumeRole"]
+          }
+        ]
+      },
+      Policies: [
+        {
+          PolicyName: {
+            "Fn::Join": ["-", ["sns-sqs-service", "dev-sd", "lambda"]]
+          },
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: []
+          }
+        }
+      ],
+      Path: "/",
+      RoleName: {
+        "Fn::Join": [
+          "-",
+          [
+            "sns-sqs-service",
+            "dev-sd",
+            {
+              Ref: "AWS::Region"
+            },
+            "lambdaRole"
+          ]
+        ]
+      }
+    }
+  }
+});
+
 describe("Test Serverless SNS SQS Lambda", () => {
   let serverless;
   let serverlessSnsSqsLambda;
@@ -69,7 +121,11 @@ describe("Test Serverless SNS SQS Lambda", () => {
 
   describe("when no optional parameters are provided", () => {
     it("should produce valid SQS CF template items", () => {
-      const template = { Resources: {} };
+      const template = {
+        Resources: {
+          ...generateIamLambdaExecutionRole()
+        }
+      };
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
@@ -83,13 +139,18 @@ describe("Test Serverless SNS SQS Lambda", () => {
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
       serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
       serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });
 
   describe("when all parameters are provided", () => {
     it("should produce valid SQS CF template items", () => {
-      const template = { Resources: {} };
+      const template = {
+        Resources: {
+          ...generateIamLambdaExecutionRole()
+        }
+      };
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
@@ -114,13 +175,18 @@ describe("Test Serverless SNS SQS Lambda", () => {
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
       serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
       serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });
 
   describe("when encryption parameters are not provided", () => {
     it("should produce valid SQS CF template items", () => {
-      const template = { Resources: {} };
+      const template = {
+        Resources: {
+          ...generateIamLambdaExecutionRole()
+        }
+      };
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
@@ -136,13 +202,18 @@ describe("Test Serverless SNS SQS Lambda", () => {
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
       serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
       serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });
 
   describe("when overriding the generated CloudFormation template", () => {
     it("the overrides should take precedence", () => {
-      const template = { Resources: {} };
+      const template = {
+        Resources: {
+          ...generateIamLambdaExecutionRole()
+        }
+      };
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
@@ -174,6 +245,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
       serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
       serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
 
       expect(template).toMatchSnapshot();
     });
@@ -181,11 +253,15 @@ describe("Test Serverless SNS SQS Lambda", () => {
 
   describe("when fifo is true", () => {
     it("should produce valid fifo queues", () => {
-      const template = { Resources: {} };
+      const template = {
+        Resources: {
+          ...generateIamLambdaExecutionRole()
+        }
+      };
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-        fifo: true,
+        fifo: true
       };
       const validatedConfig = serverlessSnsSqsLambda.validateConfig(
         "test-function",
@@ -196,6 +272,30 @@ describe("Test Serverless SNS SQS Lambda", () => {
       serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
       serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
       serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
+      expect(template).toMatchSnapshot();
+    });
+  });
+
+  describe("when a custom role ARN is specified", () => {
+    it("it should not crash and just skip creating the policies", () => {
+      const template = {
+        Resources: {}
+      };
+      const testConfig = {
+        name: "some-name",
+        topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+      };
+      const validatedConfig = serverlessSnsSqsLambda.validateConfig(
+        "test-function",
+        "test-stage",
+        testConfig
+      );
+      serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventDeadLetterQueue(template, validatedConfig);
+      serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
+      serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
+      serverlessSnsSqsLambda.addLambdaSqsPermissions(template, validatedConfig);
       expect(template).toMatchSnapshot();
     });
   });

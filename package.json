@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib",
-    "format": "prettier --write 'lib/**/*.{ts,tsx,yaml,yml,js,json}'",
-    "format-check": "prettier --check 'lib/**/*.{ts,tsx,yaml,yml,js,json}'",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
     "build": "tsc",
     "commit": "git-cz",
+    "check-branch-commits": "cz check --rev-range master..HEAD",
     "prepack": "tsc"
   },
   "repository": {
@@ -30,6 +31,8 @@
   },
   "homepage": "https://github.com/agiledigital/serverless-sns-sqs-lambda#readme",
   "devDependencies": {
+    "@commitlint/cli": "^13.2.1",
+    "@commitlint/config-conventional": "^13.2.0",
     "@jedmao/semantic-release-npm-github-config": "^1.0.9",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.6.0",

@@ -18,7 +18,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -157,7 +156,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 7,
         "Enabled": "False",
@@ -296,7 +294,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -429,7 +426,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -564,7 +560,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -697,7 +692,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": false,

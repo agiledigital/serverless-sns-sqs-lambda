@@ -174,7 +174,7 @@ export default class ServerlessSnsSqsLambda {
    */
   modifyTemplate() {
     const functions = this.serverless.service.functions;
-    const stage = this.serverless.service.provider.stage;
+    const stage = this.options.stage || this.serverless.service.provider.stage;
     const template =
       this.serverless.service.provider.compiledCloudFormationTemplate;
 
@@ -371,7 +371,7 @@ Usage
     template.Resources[`${name}DeadLetterQueue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`,
+        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""}`,
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
@@ -417,7 +417,7 @@ Usage
     template.Resources[`${name}Queue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}Queue${fifo ? '.fifo' : ''}`,
+        QueueName: `${prefix}${name}Queue${fifo ? ".fifo" : ""}`,
         ...(fifo ? { FifoQueue: true } : {}),
         RedrivePolicy: {
           deadLetterTargetArn: {
@@ -526,10 +526,14 @@ Usage
         ],
         Resource: [
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${fifo ? '.fifo' : ''}`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${
+              fifo ? ".fifo" : ""
+            }`
           },
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${
+              fifo ? ".fifo" : ""
+            }`
           }
         ]
       }

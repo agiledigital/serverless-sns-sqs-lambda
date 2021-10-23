@@ -333,7 +333,6 @@ Usage
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
-      DependsOn: "IamRoleLambdaExecution",
       Properties: {
         BatchSize: batchSize,
         MaximumBatchingWindowInSeconds:
@@ -371,7 +370,7 @@ Usage
     template.Resources[`${name}DeadLetterQueue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`,
+        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""}`,
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
@@ -417,7 +416,7 @@ Usage
     template.Resources[`${name}Queue`] = {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}Queue${fifo ? '.fifo' : ''}`,
+        QueueName: `${prefix}${name}Queue${fifo ? ".fifo" : ""}`,
         ...(fifo ? { FifoQueue: true } : {}),
         RedrivePolicy: {
           deadLetterTargetArn: {
@@ -516,6 +515,12 @@ Usage
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
   addLambdaSqsPermissions(template, { name, prefix, fifo }) {
+    if (template.Resources.IamRoleLambdaExecution === undefined) {
+      // The user has set their own custom role ARN so the Serverless generated role is not generated
+      // We can safely skip this step because the owner of the custom role ARN is responsible for setting
+      // this the relevant policy to allow the lambda to access the queue.
+      return;
+    }
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",
@@ -526,10 +531,14 @@ Usage
         ],
         Resource: [
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${fifo ? '.fifo' : ''}`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${
+              fifo ? ".fifo" : ""
+            }`
           },
           {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${fifo ? '.fifo' : ''}`
+            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${
+              fifo ? ".fifo" : ""
+            }`
           }
         ]
       }

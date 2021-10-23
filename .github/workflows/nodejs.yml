@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x, 16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -34,11 +34,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build
-        run: yarn run build
+        run: yarn build
       - name: Type Coverage
-        run: yarn run type-coverage
+        run: yarn type-coverage
       - name: Test
-        run: yarn run test
+        run: yarn test --coverage
+      - name: Check formatting
+        run: yarn format-check
       - name: Package example service to ensure compatibility
         run: cd example-service && yarn install --frozen-lockfile && yarn sls package
       - name: Run Semantic Release
@@ -55,4 +57,4 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn semantic-release
-        if: matrix.node-version == '12.x'
+        if: matrix.node-version == '14.x'

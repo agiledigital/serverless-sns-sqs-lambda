@@ -1,8 +1,140 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test Serverless SNS SQS Lambda when a custom role ARN is specified it should not crash and just skip creating the policies 1`] = `
+Object {
+  "Resources": Object {
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "QueueName": "null-test-stage-Test-functionsome-nameDeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "QueueName": "null-test-stage-Test-functionsome-nameQueue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+  },
+}
+`;
+
 exports[`Test Serverless SNS SQS Lambda when all parameters are provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                    },
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "sns-sqs-service",
+                  "dev-sd",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "sns-sqs-service",
+              "dev-sd",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "Subscribesome-nameTopic": Object {
       "Properties": Object {
         "Endpoint": Object {
@@ -24,7 +156,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 7,
         "Enabled": "False",
@@ -78,6 +209,76 @@ Object {
 exports[`Test Serverless SNS SQS Lambda when encryption parameters are not provided should produce valid SQS CF template items 1`] = `
 Object {
   "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                    },
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "sns-sqs-service",
+                  "dev-sd",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "sns-sqs-service",
+              "dev-sd",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "Subscribesome-nameTopic": Object {
       "Properties": Object {
         "Endpoint": Object {
@@ -93,7 +294,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -138,9 +338,79 @@ Object {
 }
 `;
 
-exports[`Test Serverless SNS SQS Lambda when no optional parameters are provided should produce valid SQS CF template items 1`] = `
+exports[`Test Serverless SNS SQS Lambda when fifo is true should produce valid fifo queues 1`] = `
 Object {
   "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:null-test-stage-Test-functionsome-nameQueue.fifo",
+                    },
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:null-test-stage-Test-functionsome-nameDeadLetterQueue.fifo",
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "sns-sqs-service",
+                  "dev-sd",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "sns-sqs-service",
+              "dev-sd",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "Subscribesome-nameTopic": Object {
       "Properties": Object {
         "Endpoint": Object {
@@ -156,7 +426,140 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "FifoQueue": true,
+        "QueueName": "null-test-stage-Test-functionsome-nameDeadLetterQueue.fifo",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "FifoQueue": true,
+        "QueueName": "null-test-stage-Test-functionsome-nameQueue.fifo",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+  },
+}
+`;
+
+exports[`Test Serverless SNS SQS Lambda when no optional parameters are provided should produce valid SQS CF template items 1`] = `
+Object {
+  "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:null-test-stage-Test-functionsome-nameQueue",
+                    },
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:null-test-stage-Test-functionsome-nameDeadLetterQueue",
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "sns-sqs-service",
+                  "dev-sd",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "sns-sqs-service",
+              "dev-sd",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": "True",
@@ -204,6 +607,76 @@ Object {
 exports[`Test Serverless SNS SQS Lambda when overriding the generated CloudFormation template the overrides should take precedence 1`] = `
 Object {
   "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                    },
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "sns-sqs-service",
+                  "dev-sd",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "sns-sqs-service",
+              "dev-sd",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "Subscribesome-nameTopic": Object {
       "Properties": Object {
         "Endpoint": Object {
@@ -219,7 +692,6 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
       "Properties": Object {
         "BatchSize": 10,
         "Enabled": false,
@@ -259,71 +731,6 @@ Object {
           "maxReceiveCount": 4,
         },
         "VisibilityTimeout": 4321,
-      },
-      "Type": "AWS::SQS::Queue",
-    },
-  },
-}
-`;
-
-exports[`Test Serverless SNS SQS Lambda when fifo is true should produce valid fifo queues 1`] = `
-Object {
-  "Resources": Object {
-    "Subscribesome-nameTopic": Object {
-      "Properties": Object {
-        "Endpoint": Object {
-          "Fn::GetAtt": Array [
-            "some-nameQueue",
-            "Arn",
-          ],
-        },
-        "Protocol": "sqs",
-        "RawMessageDelivery": false,
-        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
-      },
-      "Type": "AWS::SNS::Subscription",
-    },
-    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
-      "DependsOn": "IamRoleLambdaExecution",
-      "Properties": Object {
-        "BatchSize": 10,
-        "Enabled": "True",
-        "EventSourceArn": Object {
-          "Fn::GetAtt": Array [
-            "some-nameQueue",
-            "Arn",
-          ],
-        },
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "Test-functionLambdaFunction",
-            "Arn",
-          ],
-        },
-        "MaximumBatchingWindowInSeconds": 0,
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "some-nameDeadLetterQueue": Object {
-      "Properties": Object {
-        "FifoQueue": true,
-        "QueueName": "null-test-stage-Test-functionsome-nameDeadLetterQueue.fifo",
-      },
-      "Type": "AWS::SQS::Queue",
-    },
-    "some-nameQueue": Object {
-      "Properties": Object {
-        "FifoQueue": true,
-        "QueueName": "null-test-stage-Test-functionsome-nameQueue.fifo",
-        "RedrivePolicy": Object {
-          "deadLetterTargetArn": Object {
-            "Fn::GetAtt": Array [
-              "some-nameDeadLetterQueue",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 5,
-        },
       },
       "Type": "AWS::SQS::Queue",
     },

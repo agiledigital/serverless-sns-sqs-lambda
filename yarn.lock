@@ -9522,9 +9522,9 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.2.0, semver@^6.3.0:
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 serverless@^2.19.0:
-  version "2.69.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.69.0.tgz#8538fad6e33f4cf9414c3d8e40920f9b8f246e9c"
-  integrity sha512-KhYpRMUsEb69iZjBhvjgARGuORbU2A764ami65X1M+gKXNhOIo+bLqGyzZYzam5wndSVqMLc839sGm1R5WZYjg==
+  version "2.69.1"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-2.69.1.tgz#3e8ba436028ca2c871ff81d87bc624b689d5eb17"
+  integrity sha512-pHHr8l6BDDzHIcFqdXDNGIrEbtcm4Lf0dlE3nuHVvmADET+rdl5aOWem9JaHA75cyICybm8oj8FhhtJIt5Uotw==
   dependencies:
     "@serverless/cli" "^1.5.3"
     "@serverless/components" "^3.18.1"

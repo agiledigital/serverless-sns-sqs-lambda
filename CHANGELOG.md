@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.9.1...v1.0.0) (2022-01-07)
+
+
+### Bug Fixes
+
+* add another source of stage ([e9c1cb1](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/e9c1cb185706dca8ffcaf8b5b1a82b80512215c1)), closes [#432](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/432)
+
+
+### Features
+
+* ensure that work done for issue [#432](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/432) is published as a new major version ([6433354](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/643335489b6488d8beb4ed2755c60623b16cabe1))
+
+
+### BREAKING CHANGES
+
+* the way that stage is determined has changed which might cause the generated CF template to change, causing issues on the next deploy
+
 ## [0.9.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.9.0...v0.9.1) (2021-10-23)
 
 

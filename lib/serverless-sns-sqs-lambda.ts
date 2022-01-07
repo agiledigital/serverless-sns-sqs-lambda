@@ -101,6 +101,7 @@ export default class ServerlessSnsSqsLambda {
   provider: any;
   custom: any;
   serviceName: string;
+  stage: string;
   hooks: any;
 
   /**
@@ -113,6 +114,13 @@ export default class ServerlessSnsSqsLambda {
     this.provider = serverless ? serverless.getProvider("aws") : null;
     this.custom = serverless.service ? serverless.service.custom : null;
     this.serviceName = serverless.service.service;
+
+    // Aligns with AWS provider order of precedence: https://github.com/serverless/serverless/blob/46d090a302b9f7f4a3cf479695489b7ffc46b75b/lib/plugins/aws/provider.js#L1728
+    // Serverless will set one of these to "dev" if it is not provided so we don't need an explicit fallback
+    this.stage =
+      this.options.stage ||
+      this.serverless.config.stage ||
+      this.serverless.service.provider.stage;
 
     serverless.configSchemaHandler.defineFunctionEvent("aws", "snsSqs", {
       type: "object",
@@ -174,7 +182,6 @@ export default class ServerlessSnsSqsLambda {
    */
   modifyTemplate() {
     const functions = this.serverless.service.functions;
-    const stage = this.serverless.service.provider.stage;
     const template =
       this.serverless.service.provider.compiledCloudFormationTemplate;
 
@@ -188,7 +195,12 @@ export default class ServerlessSnsSqsLambda {
                 `Adding snsSqs event handler [${JSON.stringify(event.snsSqs)}]`
               );
             }
-            this.addSnsSqsResources(template, funcKey, stage, event.snsSqs);
+            this.addSnsSqsResources(
+              template,
+              funcKey,
+              this.stage,
+              event.snsSqs
+            );
           }
         });
       }

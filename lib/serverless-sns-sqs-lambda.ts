@@ -345,7 +345,6 @@ Usage
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
       Type: "AWS::Lambda::EventSourceMapping",
-      DependsOn: "IamRoleLambdaExecution",
       Properties: {
         BatchSize: batchSize,
         MaximumBatchingWindowInSeconds:
@@ -528,6 +527,12 @@ Usage
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
   addLambdaSqsPermissions(template, { name, prefix, fifo }) {
+    if (template.Resources.IamRoleLambdaExecution === undefined) {
+      // The user has set their own custom role ARN so the Serverless generated role is not generated
+      // We can safely skip this step because the owner of the custom role ARN is responsible for setting
+      // this the relevant policy to allow the lambda to access the queue.
+      return;
+    }
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",

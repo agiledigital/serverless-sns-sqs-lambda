@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.9.0...v0.9.1) (2021-10-23)
+
+
+### Bug Fixes
+
+* remove unneccessary 'DependsOn' block ([9276523](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/9276523d01cb510b6fd2f685f121b1c42a86a77e))
+* support custom role ARNs ([563c202](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/563c20267151efa7122e8a3f7a5df0ea49a25c37)), closes [#350](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/350)
+
 # [0.9.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.8.0...v0.9.0) (2021-10-13)
 
 

@@ -185,7 +185,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
       const testConfig = {
         name: "some-name",
         topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-        fifo: true,
+        fifo: true
       };
       const validatedConfig = serverlessSnsSqsLambda.validateConfig(
         "test-function",

@@ -44,7 +44,7 @@
     "jest": "^26.3.0",
     "prettier": "^2.1.2",
     "semantic-release": "^17.1.1",
-    "serverless": "^2.64.1",
+    "serverless": "^3.13.0",
     "ts-jest": "^26.4.3",
     "type-coverage": "^2.14.0",
     "type-fest": "^2.9.0",

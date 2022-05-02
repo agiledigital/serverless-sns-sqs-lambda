@@ -67,6 +67,25 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
   );
 
 /**
+ * Adds a resource block to a template, ensuring uniqueness.
+ * @param template the serverless template
+ * @param logicalId the logical ID (resource key) for the resource
+ * @param resourceDefinition the definition of the resource
+ */
+const addResource = (
+  template: any,
+  logicalId: string,
+  resourceDefinition: Record<string, unknown>
+) => {
+  if (logicalId in template.Resources) {
+    throw new Error(
+      `Logical ID [${logicalId}] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property.`
+    );
+  }
+  template.Resources[logicalId] = resourceDefinition;
+};
+
+/**
  * The ServerlessSnsSqsLambda plugin looks for functions that contain an
  * `snsSqs` event and adds the necessary resources for the Lambda to subscribe
  * to the SNS topics with error handling and retry functionality built in.
@@ -343,7 +362,7 @@ Usage
     }: Config
   ) {
     const enabledWithDefault = enabled !== undefined ? enabled : true;
-    template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
+    addResource(template, `${funcName}EventSourceMappingSQS${name}Queue`, {
       Type: "AWS::Lambda::EventSourceMapping",
       Properties: {
         BatchSize: batchSize,
@@ -356,7 +375,7 @@ Usage
         Enabled: enabledWithDefault ? "True" : "False",
         ...pascalCaseAllKeys(eventSourceMappingOverride)
       }
-    };
+    });
   }
 
   /**
@@ -379,7 +398,7 @@ Usage
       deadLetterQueueOverride
     }
   ) {
-    template.Resources[`${name}DeadLetterQueue`] = {
+    addResource(template, `${name}DeadLetterQueue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
         QueueName: `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""}`,
@@ -401,7 +420,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(deadLetterQueueOverride)
       }
-    };
+    });
   }
 
   /**
@@ -425,7 +444,7 @@ Usage
       mainQueueOverride
     }: Config
   ) {
-    template.Resources[`${name}Queue`] = {
+    addResource(template, `${name}Queue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
         QueueName: `${prefix}${name}Queue${fifo ? ".fifo" : ""}`,
@@ -453,7 +472,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(mainQueueOverride)
       }
-    };
+    });
   }
 
   /**
@@ -464,7 +483,7 @@ Usage
    *  resource prefix and the arn of the topic
    */
   addEventQueuePolicy(template, { name, prefix, topicArn }: Config) {
-    template.Resources[`${name}QueuePolicy`] = {
+    addResource(template, `${name}QueuePolicy`, {
       Type: "AWS::SQS::QueuePolicy",
       Properties: {
         PolicyDocument: {
@@ -483,7 +502,7 @@ Usage
         },
         Queues: [{ Ref: `${name}Queue` }]
       }
-    };
+    });
   }
 
   /**
@@ -503,7 +522,7 @@ Usage
       subscriptionOverride
     }: Config
   ) {
-    template.Resources[`Subscribe${name}Topic`] = {
+    addResource(template, `Subscribe${name}Topic`, {
       Type: "AWS::SNS::Subscription",
       Properties: {
         Endpoint: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
@@ -517,7 +536,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(subscriptionOverride)
       }
-    };
+    });
   }
 
   /**

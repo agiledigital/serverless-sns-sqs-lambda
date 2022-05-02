@@ -139,7 +139,6 @@ describe("Test Serverless SNS SQS Lambda", () => {
           serverlessSnsSqsLambda.stage,
           testConfig
         );
-        console.error("prefix", validatedConfig.prefix);
         serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
         serverlessSnsSqsLambda.addEventDeadLetterQueue(
           template,
@@ -460,7 +459,6 @@ describe("Test Serverless SNS SQS Lambda", () => {
           serverlessSnsSqsLambda.stage,
           testConfig
         );
-        console.error("prefix", validatedConfig.prefix);
         serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
         serverlessSnsSqsLambda.addEventDeadLetterQueue(
           template,
@@ -587,6 +585,59 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
 
         expect(template).toMatchSnapshot();
+      });
+    });
+
+    describe("when there are duplicate names", () => {
+      it("should throw", () => {
+        const template = {
+          Resources: {
+            ...generateIamLambdaExecutionRole()
+          }
+        };
+        const testCase = {
+          functions: {
+            Fn1: {
+              events: [
+                {
+                  snsSqs: {
+                    name: "Event1",
+                    topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+                  }
+                }
+              ]
+            },
+            Fn2: {
+              events: [
+                {
+                  snsSqs: {
+                    name: "Event1",
+                    topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+                  }
+                }
+              ]
+            }
+          }
+        } as const;
+
+        const thunk = () => {
+          serverlessSnsSqsLambda.addSnsSqsResources(
+            template,
+            "Fn1",
+            "unit-test",
+            testCase.functions.Fn1.events[0].snsSqs
+          );
+          serverlessSnsSqsLambda.addSnsSqsResources(
+            template,
+            "Fn2",
+            "unit-test",
+            testCase.functions.Fn2.events[0].snsSqs
+          );
+        };
+
+        expect(thunk).toThrowErrorMatchingInlineSnapshot(
+          `"Logical ID [Event1DeadLetterQueue] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property."`
+        );
       });
     });
   });

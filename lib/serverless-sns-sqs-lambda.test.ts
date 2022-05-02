@@ -636,8 +636,92 @@ describe("Test Serverless SNS SQS Lambda", () => {
         };
 
         expect(thunk).toThrowErrorMatchingInlineSnapshot(
-          `"Logical ID [Event1DeadLetterQueue] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property."`
+          `"Generated logical ID [Event1DeadLetterQueue] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property."`
         );
+      });
+    });
+
+    describe("when the generated queue names are too long (over 80 characters)", () => {
+      describe("when omitPhysicalId is false", () => {
+        it("should throw", () => {
+          const template = {
+            Resources: {
+              ...generateIamLambdaExecutionRole()
+            }
+          };
+          const testCase = {
+            functions: {
+              Fn1: {
+                events: [
+                  {
+                    snsSqs: {
+                      prefix: "something-really-long-that-puts-it-",
+                      name: "over-80-characters-which-is-no-good",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+                    }
+                  }
+                ]
+              }
+            }
+          } as const;
+
+          const thunk = () => {
+            serverlessSnsSqsLambda.addSnsSqsResources(
+              template,
+              "Fn1",
+              "unit-test",
+              testCase.functions.Fn1.events[0].snsSqs
+            );
+          };
+
+          expect(thunk).toThrowErrorMatchingInlineSnapshot(
+            `"Generated queue name [something-really-long-that-puts-it-over-80-characters-which-is-no-goodDeadLetterQueue] is longer than 80 characters long and may be truncated by AWS, causing naming collisions. Try a shorter prefix or name, or try the hashQueueName config option."`
+          );
+        });
+      });
+    });
+    describe("when omitPhysicalId is true", () => {
+      it("should omit the queue name so that AWS can generate a unique one which is 80 chars or less", () => {
+        const template = {
+          Resources: {
+            ...generateIamLambdaExecutionRole()
+          }
+        };
+        const testCase = {
+          functions: {
+            Fn1: {
+              events: [
+                {
+                  snsSqs: {
+                    prefix: "something-really-long-that-puts-it-",
+                    name: "over-80-characters-which-is-no-good",
+                    topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                    omitPhysicalId: true
+                  }
+                }
+              ]
+            }
+          }
+        } as const;
+
+        serverlessSnsSqsLambda.addSnsSqsResources(
+          template,
+          "Fn1",
+          "unit-test",
+          testCase.functions.Fn1.events[0].snsSqs
+        );
+
+        const regularQueueName =
+          template.Resources["over-80-characters-which-is-no-goodQueue"]
+            .Properties.QueueName;
+        const deadLetterQueueName =
+          template.Resources[
+            "over-80-characters-which-is-no-goodDeadLetterQueue"
+          ].Properties.QueueName;
+
+        // AWS will do this for us
+        expect(regularQueueName).toBeUndefined();
+        expect(deadLetterQueueName).toBeUndefined();
       });
     });
   });

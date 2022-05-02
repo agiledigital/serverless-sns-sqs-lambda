@@ -21,6 +21,7 @@ functions:
       - snsSqs:
           name: ResourcePrefix
           topicArn: ${self:custom.topicArn}
+          omitPhysicalId: true
           batchSize: 2
           maximumBatchingWindowInSeconds: 30
           maxRetryCount: 2

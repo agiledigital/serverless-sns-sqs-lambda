@@ -1,4 +1,5 @@
 import { JsonObject } from "type-fest";
+
 // Future work: Properly type the file
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -24,6 +25,7 @@ type Config = {
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
+  readonly omitPhysicalId: boolean;
 
   mainQueueOverride: JsonObject;
   deadLetterQueueOverride: JsonObject;
@@ -66,6 +68,15 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
     {}
   );
 
+const validateQueueName = (queueName: string): string => {
+  if (queueName.length > 80) {
+    throw new Error(
+      `Generated queue name [${queueName}] is longer than 80 characters long and may be truncated by AWS, causing naming collisions. Try a shorter prefix or name, or try the hashQueueName config option.`
+    );
+  }
+  return queueName;
+};
+
 /**
  * Adds a resource block to a template, ensuring uniqueness.
  * @param template the serverless template
@@ -79,7 +90,7 @@ const addResource = (
 ) => {
   if (logicalId in template.Resources) {
     throw new Error(
-      `Logical ID [${logicalId}] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property.`
+      `Generated logical ID [${logicalId}] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property.`
     );
   }
   template.Resources[logicalId] = resourceDefinition;
@@ -146,6 +157,7 @@ export default class ServerlessSnsSqsLambda {
       properties: {
         name: { type: "string" },
         topicArn: { $ref: "#/definitions/awsArn" },
+        omitPhysicalId: { type: "boolean" },
         batchSize: { type: "number", minimum: 1, maximum: 10000 },
         maximumBatchingWindowInSeconds: {
           type: "number",
@@ -395,13 +407,19 @@ Usage
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds,
-      deadLetterQueueOverride
+      deadLetterQueueOverride,
+      omitPhysicalId
     }
   ) {
+    const candidateQueueName = `${prefix}${name}DeadLetterQueue${
+      fifo ? ".fifo" : ""
+    }`;
     addResource(template, `${name}DeadLetterQueue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""}`,
+        ...(omitPhysicalId
+          ? {}
+          : { QueueName: validateQueueName(candidateQueueName) }),
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
@@ -441,13 +459,17 @@ Usage
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       visibilityTimeout,
-      mainQueueOverride
+      mainQueueOverride,
+      omitPhysicalId
     }: Config
   ) {
+    const candidateQueueName = `${prefix}${name}Queue${fifo ? ".fifo" : ""}`;
     addResource(template, `${name}Queue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}Queue${fifo ? ".fifo" : ""}`,
+        ...(omitPhysicalId
+          ? {}
+          : { QueueName: validateQueueName(candidateQueueName) }),
         ...(fifo ? { FifoQueue: true } : {}),
         RedrivePolicy: {
           deadLetterTargetArn: {
@@ -545,13 +567,14 @@ Usage
    * @param {object} template the template which gets mutated
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
-  addLambdaSqsPermissions(template, { name, prefix, fifo }) {
+  addLambdaSqsPermissions(template, { name }) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
       // this the relevant policy to allow the lambda to access the queue.
       return;
     }
+
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",
@@ -561,16 +584,8 @@ Usage
           "sqs:GetQueueAttributes"
         ],
         Resource: [
-          {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${
-              fifo ? ".fifo" : ""
-            }`
-          },
-          {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${
-              fifo ? ".fifo" : ""
-            }`
-          }
+          { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
+          { "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"] }
         ]
       }
     );

@@ -1,4 +1,5 @@
 import { JsonObject } from "type-fest";
+
 // Future work: Properly type the file
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -24,6 +25,7 @@ type Config = {
   visibilityTimeout: number;
   rawMessageDelivery: boolean;
   filterPolicy: any;
+  readonly omitPhysicalId: boolean;
 
   mainQueueOverride: JsonObject;
   deadLetterQueueOverride: JsonObject;
@@ -65,6 +67,34 @@ const pascalCaseAllKeys = (jsonObject: JsonObject): JsonObject =>
     }),
     {}
   );
+
+const validateQueueName = (queueName: string): string => {
+  if (queueName.length > 80) {
+    throw new Error(
+      `Generated queue name [${queueName}] is longer than 80 characters long and may be truncated by AWS, causing naming collisions. Try a shorter prefix or name, or try the hashQueueName config option.`
+    );
+  }
+  return queueName;
+};
+
+/**
+ * Adds a resource block to a template, ensuring uniqueness.
+ * @param template the serverless template
+ * @param logicalId the logical ID (resource key) for the resource
+ * @param resourceDefinition the definition of the resource
+ */
+const addResource = (
+  template: any,
+  logicalId: string,
+  resourceDefinition: Record<string, unknown>
+) => {
+  if (logicalId in template.Resources) {
+    throw new Error(
+      `Generated logical ID [${logicalId}] already exists in resources definition. Ensure that the snsSqs event definition has a unique name property.`
+    );
+  }
+  template.Resources[logicalId] = resourceDefinition;
+};
 
 /**
  * The ServerlessSnsSqsLambda plugin looks for functions that contain an
@@ -127,6 +157,7 @@ export default class ServerlessSnsSqsLambda {
       properties: {
         name: { type: "string" },
         topicArn: { $ref: "#/definitions/awsArn" },
+        omitPhysicalId: { type: "boolean" },
         batchSize: { type: "number", minimum: 1, maximum: 10000 },
         maximumBatchingWindowInSeconds: {
           type: "number",
@@ -343,7 +374,7 @@ Usage
     }: Config
   ) {
     const enabledWithDefault = enabled !== undefined ? enabled : true;
-    template.Resources[`${funcName}EventSourceMappingSQS${name}Queue`] = {
+    addResource(template, `${funcName}EventSourceMappingSQS${name}Queue`, {
       Type: "AWS::Lambda::EventSourceMapping",
       Properties: {
         BatchSize: batchSize,
@@ -356,7 +387,7 @@ Usage
         Enabled: enabledWithDefault ? "True" : "False",
         ...pascalCaseAllKeys(eventSourceMappingOverride)
       }
-    };
+    });
   }
 
   /**
@@ -376,13 +407,19 @@ Usage
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds,
-      deadLetterQueueOverride
+      deadLetterQueueOverride,
+      omitPhysicalId
     }
   ) {
-    template.Resources[`${name}DeadLetterQueue`] = {
+    const candidateQueueName = `${prefix}${name}DeadLetterQueue${
+      fifo ? ".fifo" : ""
+    }`;
+    addResource(template, `${name}DeadLetterQueue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""}`,
+        ...(omitPhysicalId
+          ? {}
+          : { QueueName: validateQueueName(candidateQueueName) }),
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
@@ -401,7 +438,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(deadLetterQueueOverride)
       }
-    };
+    });
   }
 
   /**
@@ -422,13 +459,17 @@ Usage
       kmsMasterKeyId,
       kmsDataKeyReusePeriodSeconds,
       visibilityTimeout,
-      mainQueueOverride
+      mainQueueOverride,
+      omitPhysicalId
     }: Config
   ) {
-    template.Resources[`${name}Queue`] = {
+    const candidateQueueName = `${prefix}${name}Queue${fifo ? ".fifo" : ""}`;
+    addResource(template, `${name}Queue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
-        QueueName: `${prefix}${name}Queue${fifo ? ".fifo" : ""}`,
+        ...(omitPhysicalId
+          ? {}
+          : { QueueName: validateQueueName(candidateQueueName) }),
         ...(fifo ? { FifoQueue: true } : {}),
         RedrivePolicy: {
           deadLetterTargetArn: {
@@ -453,7 +494,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(mainQueueOverride)
       }
-    };
+    });
   }
 
   /**
@@ -464,7 +505,7 @@ Usage
    *  resource prefix and the arn of the topic
    */
   addEventQueuePolicy(template, { name, prefix, topicArn }: Config) {
-    template.Resources[`${name}QueuePolicy`] = {
+    addResource(template, `${name}QueuePolicy`, {
       Type: "AWS::SQS::QueuePolicy",
       Properties: {
         PolicyDocument: {
@@ -483,7 +524,7 @@ Usage
         },
         Queues: [{ Ref: `${name}Queue` }]
       }
-    };
+    });
   }
 
   /**
@@ -503,7 +544,7 @@ Usage
       subscriptionOverride
     }: Config
   ) {
-    template.Resources[`Subscribe${name}Topic`] = {
+    addResource(template, `Subscribe${name}Topic`, {
       Type: "AWS::SNS::Subscription",
       Properties: {
         Endpoint: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
@@ -517,7 +558,7 @@ Usage
           : {}),
         ...pascalCaseAllKeys(subscriptionOverride)
       }
-    };
+    });
   }
 
   /**
@@ -526,13 +567,14 @@ Usage
    * @param {object} template the template which gets mutated
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
-  addLambdaSqsPermissions(template, { name, prefix, fifo }) {
+  addLambdaSqsPermissions(template, { name }) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
       // this the relevant policy to allow the lambda to access the queue.
       return;
     }
+
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",
@@ -542,16 +584,8 @@ Usage
           "sqs:GetQueueAttributes"
         ],
         Resource: [
-          {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}Queue${
-              fifo ? ".fifo" : ""
-            }`
-          },
-          {
-            "Fn::Sub": `arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:${prefix}${name}DeadLetterQueue${
-              fifo ? ".fifo" : ""
-            }`
-          }
+          { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
+          { "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"] }
         ]
       }
     );

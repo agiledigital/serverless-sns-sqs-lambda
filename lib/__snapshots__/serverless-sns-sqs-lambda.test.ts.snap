@@ -35,10 +35,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-Test-functionsome-nameQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-Test-functionsome-nameDeadLetterQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -169,10 +175,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-Test-functionsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-Test-functionsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -363,10 +375,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -507,10 +525,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -639,10 +663,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-Test-functionsome-nameQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-Test-functionsome-nameDeadLetterQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -773,10 +803,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-Test-functionsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-Test-functionsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -905,10 +941,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:some prefixsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -1039,10 +1081,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-config-Test-functionsome-nameQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-config-Test-functionsome-nameDeadLetterQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -1173,10 +1221,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-config-Test-functionsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-config-Test-functionsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -1305,10 +1359,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-provider-Test-functionsome-nameQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-provider-Test-functionsome-nameDeadLetterQueue.fifo",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },
@@ -1439,10 +1499,16 @@ Object {
                   "Effect": "Allow",
                   "Resource": Array [
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-provider-Test-functionsome-nameQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
                     },
                     Object {
-                      "Fn::Sub": "arn:\${AWS::Partition}:sqs:\${AWS::Region}:\${AWS::AccountId}:test-service-dev-test-provider-Test-functionsome-nameDeadLetterQueue",
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
                     },
                   ],
                 },

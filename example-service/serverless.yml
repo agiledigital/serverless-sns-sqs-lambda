@@ -7,7 +7,7 @@ configValidationMode: error
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs14.x
   region: ap-southeast-2
   stage: ${opt:stage, 'dev'}
 
@@ -21,6 +21,7 @@ functions:
       - snsSqs:
           name: ResourcePrefix
           topicArn: ${self:custom.topicArn}
+          omitPhysicalId: true
           batchSize: 2
           maximumBatchingWindowInSeconds: 30
           maxRetryCount: 2
@@ -28,10 +29,10 @@ functions:
           kmsDataKeyReusePeriodSeconds: 600
           visibilityTimeout: 120
           rawMessageDelivery: true
-          filterPolicy:
-            pet:
-              - dog
-              - cat
+          # filterPolicy:
+          #   pet:
+          #     - dog
+          #     - cat
 
           # Overrides for generated CloudFormation templates
           # Mirrors the CloudFormation docs but uses camel case instead of title case
@@ -44,7 +45,7 @@ functions:
             delaySeconds: 120
           # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html
           eventSourceMappingOverride:
-            enabled: false
+            enabled: true
           # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
           subscriptionOverride:
             rawMessageDelivery: true

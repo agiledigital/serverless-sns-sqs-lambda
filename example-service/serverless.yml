@@ -29,10 +29,10 @@ functions:
           kmsDataKeyReusePeriodSeconds: 600
           visibilityTimeout: 120
           rawMessageDelivery: true
-          filterPolicy:
-            pet:
-              - dog
-              - cat
+          # filterPolicy:
+          #   pet:
+          #     - dog
+          #     - cat
 
           # Overrides for generated CloudFormation templates
           # Mirrors the CloudFormation docs but uses camel case instead of title case
@@ -45,7 +45,7 @@ functions:
             delaySeconds: 120
           # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html
           eventSourceMappingOverride:
-            enabled: false
+            enabled: true
           # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
           subscriptionOverride:
             rawMessageDelivery: true

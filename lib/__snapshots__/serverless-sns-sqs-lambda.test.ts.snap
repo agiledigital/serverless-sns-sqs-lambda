@@ -388,6 +388,13 @@ Object {
                     },
                   ],
                 },
+                Object {
+                  "Action": Array [
+                    "kms:Decrypt",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "arn:aws:kms:::key/some key",
+                },
               ],
               "Version": "2012-10-17",
             },

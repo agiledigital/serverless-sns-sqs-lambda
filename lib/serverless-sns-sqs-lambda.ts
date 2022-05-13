@@ -5,6 +5,11 @@ import { JsonObject } from "type-fest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
+ * A regular expression that matches AWS KMS arns
+ */
+const kmsArnRegex = /^arn:aws:kms:.*:.*:key\/.+$/;
+
+/**
  * Defines the structure of the config object
  * that is passed to the main functions to
  * generate the Serverless template.
@@ -76,6 +81,14 @@ const validateQueueName = (queueName: string): string => {
   }
   return queueName;
 };
+
+/**
+ * Returns true if the provided string looks like an KMS ARN, otherwise false
+ * @param possibleArn the candidate string
+ * @returns true if the provided string looks like a KMS ARN, otherwise false
+ */
+const isKmsArn = (possibleArn: string): boolean =>
+  kmsArnRegex.test(possibleArn);
 
 /**
  * Adds a resource block to a template, ensuring uniqueness.
@@ -567,7 +580,7 @@ Usage
    * @param {object} template the template which gets mutated
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
-  addLambdaSqsPermissions(template, { name }) {
+  addLambdaSqsPermissions(template, { name, kmsMasterKeyId }) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
@@ -589,5 +602,24 @@ Usage
         ]
       }
     );
+
+    if (kmsMasterKeyId !== undefined && kmsMasterKeyId !== null) {
+      // TODO: Should we rename kmsMasterKeyId to make it clearer that it can accept an ARN?
+      const resource =
+        // If the key ID is an object, it is most likely a "Ref" or "GetAtt" so we should pass it straight through so it gets resolved by CloudFormation
+        // If an ARN is provided, pass it straight through too, because no processing is needed
+        // Otherwise if it isn't either of those things, it is probably an ID, so we need to
+        // transform it to an ARN to make the policy valid
+        typeof kmsMasterKeyId === "object" || isKmsArn(kmsMasterKeyId)
+          ? kmsMasterKeyId
+          : `arn:aws:kms:::key/${kmsMasterKeyId}`;
+      template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
+        {
+          Effect: "Allow",
+          Action: ["kms:Decrypt"],
+          Resource: resource
+        }
+      );
+    }
   }
 }

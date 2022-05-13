@@ -1,9 +1,7 @@
 service: sns-sqs-service
-# Opt-in to the strict config validation that will be default in v3
-# See: https://www.serverless.com/framework/docs/deprecations/#new-variables-resolver
-variablesResolutionMode: 20210219
 # Ensure validation issues are treated as errors
 configValidationMode: error
+frameworkVersion: "3"
 
 provider:
   name: aws
@@ -25,7 +23,7 @@ functions:
           batchSize: 2
           maximumBatchingWindowInSeconds: 30
           maxRetryCount: 2
-          kmsMasterKeyId: alias/aws/sqs
+          kmsMasterKeyId: !GetAtt SQSQueueKey.Arn
           kmsDataKeyReusePeriodSeconds: 600
           visibilityTimeout: 120
           rawMessageDelivery: true
@@ -56,6 +54,32 @@ resources:
       Type: AWS::SNS::Topic
       Properties:
         TopicName: TestTopic
+    # To allow SNS to push messages to an encrypted queue, a CMK must be used
+    SQSQueueKey:
+      Type: AWS::KMS::Key
+      Properties:
+        KeyPolicy:
+          Version: "2012-10-17"
+          Id: key-default-1
+          Statement:
+            - Sid: Enable IAM User Permissions
+              Effect: Allow
+              Principal:
+                AWS: !Join
+                  - ""
+                  - - "arn:aws:iam::"
+                    - !Ref "AWS::AccountId"
+                    - ":root"
+              Action: "kms:*"
+              Resource: "*"
+            - Sid: Allow SNS publish to SQS
+              Effect: Allow
+              Principal:
+                Service: sns.amazonaws.com
+              Action:
+                - kms:GenerateDataKey
+                - kms:Decrypt
+              Resource: "*"
 
 plugins:
   - "@agiledigital/serverless-sns-sqs-lambda"

@@ -49,7 +49,7 @@ functions:
           batchSize: 2 # Optional - default value is 10
           maximumBatchingWindowInSeconds: 10 # optional - default is 0 (no batch window)
           maxRetryCount: 2 # Optional - default value is 5
-          kmsMasterKeyId: alias/aws/sqs # optional - default is none (no encryption)
+          kmsMasterKeyId: !GetAtt SQSQueueKey.Arn # optional - default is none (no encryption) - see Notes on Encryption section below
           kmsDataKeyReusePeriodSeconds: 600 # optional - AWS default is 300 seconds
           deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
           visibilityTimeout: 120 # optional (in seconds) - AWS default is 30 secs
@@ -103,6 +103,58 @@ However, if you need to refer to the queue by name (which should be rare), rathe
 This would be set to 'true' by default if this was the first version of the plugin. However, since the plugin is already in use and it could break existing stacks and may not be backwards compatible we have set this to 'false' by default. Switching this to 'true' on an existing stack has been tested and it seems to work OK, although it does create new queues and deletes the old ones. Switch the option on an existing stack at your own risk.
 
 See also: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html
+
+### Notes on Encryption
+
+If you choose to encrypt your SQS queue, the SNS topic will not be able to send it any messages if you use a managed key (alias/aws/sqs). This is due to an AWS limitation.
+
+See: https://aws.amazon.com/premiumsupport/knowledge-center/sns-topic-sqs-queue-sse-kms-key-policy/
+
+You will need to create a CMK like the following:
+
+```yaml
+# To allow SNS to push messages to an encrypted queue, a CMK must be used
+SQSQueueCMK:
+  Type: AWS::KMS::Key
+  Properties:
+    KeyPolicy:
+      Version: "2012-10-17"
+      Id: key-default-1
+      Statement:
+        - Sid: Enable IAM User Permissions
+          Effect: Allow
+          Principal:
+            AWS: !Join
+              - ""
+              - - "arn:aws:iam::"
+                - !Ref "AWS::AccountId"
+                - ":root"
+          Action: "kms:*"
+          Resource: "*"
+        - Sid: Allow SNS publish to SQS
+          Effect: Allow
+          Principal:
+            Service: sns.amazonaws.com
+          Action:
+            - kms:GenerateDataKey
+            - kms:Decrypt
+          Resource: "*"
+```
+
+and then reference it in the `snsSqs` config with the `kmsMasterKeyId` attribute.
+
+```yaml
+functions:
+  processEvent:
+    handler: handler.handler
+    events:
+      - snsSqs:
+          # ...
+          kmsMasterKeyId: !GetAtt SQSQueueKey.Arn
+          # ...
+```
+
+`kmsMasterKeyId` can either be a key ID (simple string) or an ARN or reference to to ARN. Using !Ref on a key will return a key ID and is invalid, so you'll need to use GetAtt and reference the Arn property.
 
 ### CloudFormation Overrides
 

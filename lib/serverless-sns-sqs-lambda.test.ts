@@ -1,6 +1,6 @@
 "use strict";
 
-import CLI from "serverless/lib/classes/CLI";
+import CLI from "serverless/lib/classes/cli";
 import AwsProvider from "serverless/lib/plugins/aws/provider";
 import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
 

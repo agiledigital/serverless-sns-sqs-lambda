@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v1.0.1...v2.0.0) (2022-05-13)
+
+
+### Bug Fixes
+
+* fix case sensitivity issue ([42e9675](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/42e967520705b0d36fbf8b7b8030d40985e34a3b))
+* improve the handling of encrypted SQS queues (fixes [#555](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/555)) ([789ea78](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/789ea786e599aefd8df8d51f4cf8ca70f74810a4))
+
+
+### Features
+
+* upgrade to serverless v3 ([#540](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/540)) ([cf842f0](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/cf842f0b461594ea03df0dfee3ff7909d6e2c04b))
+
+
+### BREAKING CHANGES
+
+* If you have implemented workarounds to allow the lambda to subscribe to an encrypted SQS queue, you may get conflicts as the policy to allow the decryption is now added automatically
+
+- If you provide an key ID, key ARN or reference to a key ARN to the `kmsMasterKeyId` attribute, the relevant 'kms:Decrypt' policy statement should be added automatically to allow the subscription to work correctly
+* serverless v2 is no longer supported. It might still work, but bug fixes/new features will mostly be developed for and tested with serverless v3 (important security/bug fixes _may_ be back ported to v2 versions depending on the uptake of v3)
+
+serverless v3 is now a peer dependency, you will get warnings if you are on earlier versions
+
 ## [1.0.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v1.0.0...v1.0.1) (2022-05-13)
 
 

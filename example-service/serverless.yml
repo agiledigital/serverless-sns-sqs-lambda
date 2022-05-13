@@ -7,7 +7,7 @@ configValidationMode: error
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs14.x
   region: ap-southeast-2
   stage: ${opt:stage, 'dev'}
 

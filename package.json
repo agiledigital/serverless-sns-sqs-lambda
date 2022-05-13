@@ -43,7 +43,7 @@
     "eslint": "^7.12.1",
     "jest": "^26.3.0",
     "prettier": "^2.1.2",
-    "semantic-release": "^17.1.1",
+    "semantic-release": "^19.0.2",
     "serverless": "^3.16.0",
     "ts-jest": "^26.4.3",
     "type-coverage": "^2.14.0",

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v1.0.0...v1.0.1) (2022-05-13)
+
+
+### Bug Fixes
+
+* allow physical ID to be omitted ([#444](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/444)) ([b22944f](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/b22944f5094a544fe7b4f1b0358d21967668b6e2))
+* ensure name uniqueness ([#444](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/444)) ([83617d6](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/83617d6b98164cf14b14944a3a94e9dec906267e))
+
 # [1.0.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v0.9.1...v1.0.0) (2022-01-07)
 
 

@@ -1447,14 +1447,14 @@ Object {
     "some-nameDeadLetterQueue": Object {
       "Properties": Object {
         "FifoQueue": true,
-        "QueueName": "test-service-dev-Test-functionsome-nameDeadLetterQueue.fifo",
+        "QueueName": "test-service-dev-test-provider-Test-functionsome-nameDeadLetterQueue.fifo",
       },
       "Type": "AWS::SQS::Queue",
     },
     "some-nameQueue": Object {
       "Properties": Object {
         "FifoQueue": true,
-        "QueueName": "test-service-dev-Test-functionsome-nameQueue.fifo",
+        "QueueName": "test-service-dev-test-provider-Test-functionsome-nameQueue.fifo",
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [
@@ -1586,13 +1586,13 @@ Object {
     },
     "some-nameDeadLetterQueue": Object {
       "Properties": Object {
-        "QueueName": "test-service-dev-Test-functionsome-nameDeadLetterQueue",
+        "QueueName": "test-service-dev-test-provider-Test-functionsome-nameDeadLetterQueue",
       },
       "Type": "AWS::SQS::Queue",
     },
     "some-nameQueue": Object {
       "Properties": Object {
-        "QueueName": "test-service-dev-Test-functionsome-nameQueue",
+        "QueueName": "test-service-dev-test-provider-Test-functionsome-nameQueue",
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [

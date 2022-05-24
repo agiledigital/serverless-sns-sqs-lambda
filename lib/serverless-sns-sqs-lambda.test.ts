@@ -4,6 +4,11 @@ import CLI from "serverless/lib/classes/cli";
 import Serverless from "serverless/lib/serverless";
 import AwsProvider from "serverless/lib/plugins/aws/provider";
 import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
+// See https://github.com/serverless/test/blob/71746cd0e0c897de50e19bc96a3968e5f26bee4f/docs/run-serverless.md for more info on run-serverless
+import runServerless from "@serverless/test/run-serverless";
+import { join } from "path";
+
+const serverlessPath = join(__dirname, "../node_modules/serverless");
 
 const slsOpt = {
   region: "ap-southeast-2"
@@ -70,271 +75,357 @@ describe("Test Serverless SNS SQS Lambda", () => {
   });
 
   describe("when the provider is specified via a command line option", () => {
-    beforeEach(() => {
-      serverless = new Serverless({ commands: [], options: {} });
-      serverless.service.service = "test-service";
-      const options = {
+    const baseConfig = {
+      service: "test-service",
+      configValidationMode: "error",
+      frameworkVersion: "*",
+      provider: {
         ...slsOpt,
+        name: "aws",
+        runtime: "nodejs14.x",
         stage: "dev-test"
-      };
-      serverless.setProvider("aws", new AwsProvider(serverless));
-      serverless.cli = new CLI(serverless);
-      serverlessSnsSqsLambda = new ServerlessSnsSqsLambda(serverless, options);
-    });
+      },
+      package: {
+        // This is simply here to prevent serverless from trying to package
+        // any files. Since the config is generated in unique temp directories
+        // for each test, there are no files to resolve for packaging
+        // so providing a "pre-built" artefact with an absolute path
+        // keeps serverless happy
+        artifact: require.resolve("./__fixtures__/handler.js")
+      },
+      plugins: [require.resolve("../dist")]
+    };
 
-    it("should have one hook", () => {
-      () => {
-        expect(serverlessSnsSqsLambda.hooks.length).toBe(1);
-        expect(serverlessSnsSqsLambda.hooks[0].keys).toBe(
-          "aws:package:finalize:mergeCustomProviderResources"
-        );
-      };
-    });
-
-    it("should have access to the serverless instance", () =>
-      expect(serverlessSnsSqsLambda.serverless).toEqual(serverless));
-
-    it("should set the options variable", () =>
-      expect(serverlessSnsSqsLambda.options).toEqual({
-        ...slsOpt,
-        stage: "dev-test"
-      }));
-
-    it("should fail if name is not passed", () => {
+    it("should fail if name is not passed", async () => {
       expect.assertions(1);
-      expect(() => {
-        serverlessSnsSqsLambda.validateConfig("func-name", "stage", {
-          topicArn: "topicArn",
-          name: undefined
-        });
-      }).toThrow(/name was \[undefined\]/);
+
+      await expect(() =>
+        runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              processEvent: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      name: undefined
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        })
+      ).rejects.toMatchInlineSnapshot(`
+              [ServerlessError: Configuration error at 'functions.processEvent.events.0.snsSqs': must have required property 'name'
+
+              Learn more about configuration validation here: http://slss.io/configuration-validation]
+            `);
     });
 
-    it("should fail if topicArn is not passed", () => {
+    it("should fail if topicArn is not passed", async () => {
       expect.assertions(1);
-      expect(() => {
-        serverlessSnsSqsLambda.validateConfig("func-name", "stage", {
-          topicArn: undefined,
-          name: "name"
-        });
-      }).toThrow(/topicArn was \[undefined\]/);
+
+      await expect(() =>
+        runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              processEvent: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      topicArn: undefined,
+                      name: "some name"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        })
+      ).rejects.toMatchInlineSnapshot(`
+              [ServerlessError: Configuration error at 'functions.processEvent.events.0.snsSqs': must have required property 'topicArn'
+
+              Learn more about configuration validation here: http://slss.io/configuration-validation]
+            `);
+    });
+
+    it("should fail if topicArn is invalid", async () => {
+      expect.assertions(1);
+
+      await expect(() =>
+        runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              processEvent: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      topicArn: "not_an_arn",
+                      name: "some name"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        })
+      ).rejects.toMatchInlineSnapshot(`
+              [ServerlessError: Configuration error at 'functions.processEvent.events.0.snsSqs.topicArn': unsupported string format
+
+              Learn more about configuration validation here: http://slss.io/configuration-validation]
+            `);
     });
 
     describe("when no optional parameters are provided", () => {
-      it("should produce valid SQS CF template items", () => {
-        const template = {
-          Resources: {
-            ...generateIamLambdaExecutionRole()
+      it("should produce valid SQS CF template items", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+                    }
+                  }
+                ]
+              }
+            }
           }
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          serverlessSnsSqsLambda.stage,
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
-        expect(template).toMatchSnapshot();
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
 
     describe("when all parameters are provided", () => {
-      it("should produce valid SQS CF template items", () => {
-        const template = {
-          Resources: {
-            ...generateIamLambdaExecutionRole()
+      it("should produce valid SQS CF template items", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      batchSize: 7,
+                      maximumBatchingWindowInSeconds: 99,
+                      prefix: "some prefix",
+                      maxRetryCount: 4,
+                      kmsMasterKeyId: "some key",
+                      kmsDataKeyReusePeriodSeconds: 200,
+                      deadLetterMessageRetentionPeriodSeconds: 1209600,
+                      enabled: false,
+                      visibilityTimeout: 999,
+                      rawMessageDelivery: true,
+                      filterPolicy: { pet: ["dog", "cat"] }
+                    }
+                  }
+                ]
+              }
+            }
           }
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-          batchSize: 7,
-          maximumBatchingWindowInSeconds: 99,
-          prefix: "some prefix",
-          maxRetryCount: 4,
-          kmsMasterKeyId: "some key",
-          kmsDataKeyReusePeriodSeconds: 200,
-          deadLetterMessageRetentionPeriodSeconds: 1209600,
-          enabled: false,
-          visibilityTimeout: 999,
-          rawMessageDelivery: true,
-          filterPolicy: { pet: ["dog", "cat"] }
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          serverlessSnsSqsLambda.stage,
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
-        expect(template).toMatchSnapshot();
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
 
     describe("when encryption parameters are not provided", () => {
-      it("should produce valid SQS CF template items", () => {
-        const template = {
-          Resources: {
-            ...generateIamLambdaExecutionRole()
+      it("should produce valid SQS CF template items", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      prefix: "some prefix",
+                      maxRetryCount: 4
+                    }
+                  }
+                ]
+              }
+            }
           }
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-          prefix: "some prefix",
-          maxRetryCount: 4
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          serverlessSnsSqsLambda.stage,
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
-        expect(template).toMatchSnapshot();
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
 
     describe("when overriding the generated CloudFormation template", () => {
-      it("the overrides should take precedence", () => {
-        const template = {
-          Resources: {
-            ...generateIamLambdaExecutionRole()
+      it("the overrides should take precedence", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      prefix: "some prefix",
+                      maxRetryCount: 4,
+                      enabled: true,
+                      visibilityTimeout: 1234,
+                      deadLetterMessageRetentionPeriodSeconds: 120,
+                      rawMessageDelivery: true,
+                      mainQueueOverride: {
+                        visibilityTimeout: 4321
+                      },
+                      deadLetterQueueOverride: {
+                        MessageRetentionPeriod: 1000
+                      },
+                      eventSourceMappingOverride: {
+                        Enabled: false
+                      },
+                      subscriptionOverride: {
+                        rawMessageDelivery: false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
           }
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-          prefix: "some prefix",
-          maxRetryCount: 4,
-          enabled: true,
-          visibilityTimeout: 1234,
-          deadLetterMessageRetentionPeriodSeconds: 120,
-          rawMessageDelivery: true,
-          mainQueueOverride: {
-            visibilityTimeout: 4321
-          },
-          deadLetterQueueOverride: {
-            MessageRetentionPeriod: 1000
-          },
-          eventSourceMappingOverride: {
-            Enabled: false
-          },
-          subscriptionOverride: {
-            rawMessageDelivery: false
-          }
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          serverlessSnsSqsLambda.stage,
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
+        });
 
-        expect(template).toMatchSnapshot();
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
 
     describe("when fifo is true", () => {
-      it("should produce valid fifo queues", () => {
-        const template = {
-          Resources: {
-            ...generateIamLambdaExecutionRole()
+      it("should produce valid fifo queues", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      fifo: true
+                    }
+                  }
+                ]
+              }
+            }
           }
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
-          fifo: true
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          serverlessSnsSqsLambda.stage,
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
+        });
 
-        expect(template).toMatchSnapshot();
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
 
     describe("when a custom role ARN is specified", () => {
-      it("it should not crash and just skip creating the policies", () => {
-        const template = {
-          Resources: {}
-        };
-        const testConfig = {
-          name: "some-name",
-          topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
-        };
-        const validatedConfig = serverlessSnsSqsLambda.validateConfig(
-          "test-function",
-          "test-stage",
-          testConfig
-        );
-        serverlessSnsSqsLambda.addEventQueue(template, validatedConfig);
-        serverlessSnsSqsLambda.addEventDeadLetterQueue(
-          template,
-          validatedConfig
-        );
-        serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
-        serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
-          validatedConfig
-        );
-        expect(template).toMatchSnapshot();
+      it("it should not crash and just skip creating the policies", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            provider: {
+              ...baseConfig.provider,
+              iam: {
+                role: "arn:aws:iam::123456789012:role/execution-role",
+                deploymentRole: "arn:aws:iam::123456789012:role/deploy-role"
+              }
+            },
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
       });
     });
   });

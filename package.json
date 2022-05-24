@@ -4,7 +4,7 @@
   "description": "serverless plugin to make serverless-sns-sqs-lambda events",
   "main": "dist/index.js",
   "scripts": {
-    "test": "eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib",
+    "test": "yarn build && eslint lib/**/*.ts && jest --clearCache lib && jest --runInBand lib integration-tests",
     "format": "prettier --ignore-path .gitignore --write . !**.md",
     "format-check": "prettier --ignore-path .gitignore --check . !**.md",
     "build": "tsc",
@@ -34,6 +34,7 @@
     "@commitlint/cli": "^16.0.1",
     "@commitlint/config-conventional": "^16.0.0",
     "@jedmao/semantic-release-npm-github-config": "^1.0.9",
+    "@serverless/test": "^10.0.4",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",

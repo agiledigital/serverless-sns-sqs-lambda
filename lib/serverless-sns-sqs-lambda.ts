@@ -170,6 +170,7 @@ export default class ServerlessSnsSqsLambda {
       properties: {
         name: { type: "string" },
         topicArn: { $ref: "#/definitions/awsArn" },
+        prefix: { type: "string" },
         omitPhysicalId: { type: "boolean" },
         batchSize: { type: "number", minimum: 1, maximum: 10000 },
         maximumBatchingWindowInSeconds: {

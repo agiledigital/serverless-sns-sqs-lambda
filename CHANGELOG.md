@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v2.0.0...v2.0.1) (2022-05-24)
+
+
+### Bug Fixes
+
+* add 'prefix' to config schema (fixes [#562](https://github.com/agiledigital/serverless-sns-sqs-lambda/issues/562)) ([4602a63](https://github.com/agiledigital/serverless-sns-sqs-lambda/commit/4602a63e5b6e726f8931f3c3a3239117d25fe266))
+
 # [2.0.0](https://github.com/agiledigital/serverless-sns-sqs-lambda/compare/v1.0.1...v2.0.0) (2022-05-13)
 
 

@@ -2145,10 +2145,10 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-aws-sdk@^2.1139.0:
-  version "2.1140.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1140.0.tgz#7f19b821aac87dc6edf4d5ce256d496106779dfe"
-  integrity sha512-cNdq56UQrUzXmCgwo0/J5GGLmfHn+Vp38qgcK/Xd86Sch8P9v2o8tNv7J82mYU98YY2vO007BMxRylA4Sd8PkQ==
+aws-sdk@^2.1140.0:
+  version "2.1142.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1142.0.tgz#8fca9cfa100153d10d753afbc11a3ad7af6fe72b"
+  integrity sha512-ii+4Q8jqN31CiXpn9i/4vGCjqo02TGihmre5b44OUsTiKNXSjqr/aRrcirMsfuBFWRdrdcU12ez7Mg+N9GDNjw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4708,16 +4708,7 @@ fs-extra@8.1.0, fs-extra@^8.0.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
-  integrity sha512-C5owb14u9eJwizKGdchcDUQeFtlSHHthBk8pbX9Vc1PFZrLombudjDnNns88aYslCyF6IY5SUw3Roz6xShcEIQ==
-  dependencies:
-    graceful-fs "^4.2.0"
-    jsonfile "^6.0.1"
-    universalify "^2.0.0"
-
-fs-extra@^10.1.0:
+fs-extra@^10.0.0, fs-extra@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
   integrity sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==
@@ -9854,9 +9845,9 @@ semver@^6.0.0, semver@^6.3.0:
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
 serverless@^3.16.0:
-  version "3.18.1"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.18.1.tgz#b80619f035608ae7bbdf1f210dfceb05326722dc"
-  integrity sha512-cdUdG7RW/0A2sfTnXVwHAgHTOZ4nt45lbYddyR2rMDXST+6CGghPaK7i6c7pdV8UUuU2iS00y/R5TwtKFU9AOg==
+  version "3.18.2"
+  resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.18.2.tgz#870b992e0fb286e0b27e62987a86dc9a4aa487b8"
+  integrity sha512-aadmXPTsUKyOjHYYvjAJ9A3U0pyBCGinTKMEffzRwg1cQJrBCUqxUqvWEn814S9hkHhjLR64t2D8NO3cMZq20w==
   dependencies:
     "@serverless/dashboard-plugin" "^6.2.2"
     "@serverless/platform-client" "^4.3.2"
@@ -9864,7 +9855,7 @@ serverless@^3.16.0:
     ajv "^8.11.0"
     ajv-formats "^2.1.1"
     archiver "^5.3.1"
-    aws-sdk "^2.1139.0"
+    aws-sdk "^2.1140.0"
     bluebird "^3.7.2"
     cachedir "^2.3.0"
     chalk "^4.1.2"

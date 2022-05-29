@@ -1319,12 +1319,12 @@
     traverse "^0.6.6"
     ws "^7.5.3"
 
-"@serverless/test@^10.0.4":
-  version "10.0.4"
-  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-10.0.4.tgz#7e48b39741d14c07b6f7006e8ee70b3f981cae4b"
-  integrity sha512-T705t6DKLLUsoqpG8sQHN19caXBxfy+KYwWZr8KsIfI8gNKhV/e0d9RNHP4ldQQIF4rGq0FcRF7m/qV13d0I4Q==
+"@serverless/test@^11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-11.0.0.tgz#121d06e1d5f75d7cba78ca4bf1f7c74b0d0d623f"
+  integrity sha512-mBY6dyaEPvHeD9aI0I1wBF71EUPrPTuhuMts5axIlah5tWDSu1/P/NOxkwmmCuA0BqMpyy6IRburC4qoWlApWg==
   dependencies:
-    "@serverless/utils" "^6.0.3"
+    "@serverless/utils" "^6.6.0"
     bluebird "^3.7.2"
     chalk "^4.1.2"
     child-process-ext "^2.1.1"
@@ -3399,7 +3399,7 @@ cz-conventional-changelog@^3.2.0:
   optionalDependencies:
     "@commitlint/load" ">6.1.1"
 
-d@1, d@^1.0.0, d@^1.0.1:
+d@1, d@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/d/-/d-1.0.1.tgz#8698095372d58dbee346ffd0c7093f99f8f9eb5a"
   integrity sha512-m62ShEObQ39CfralilEQRjH6oAMtNCV1xJyEx5LpRYUVN+EviphDgUc/F3hnYbADmkiNs67Y+3ylmlG7Lnu+FA==
@@ -7183,19 +7183,7 @@ log-symbols@^4.1.0:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
 
-log@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/log/-/log-6.0.0.tgz#1e8e655f0389148e729d9ddd6d3bcbe8b93b8d21"
-  integrity sha512-sxChESNYJ/EcQv8C7xpmxhtTOngoXuMEqGDAkhXBEmt3MAzM3SM/TmIBOqnMEVdrOv1+VgZoYbo6U2GemQiU4g==
-  dependencies:
-    d "^1.0.0"
-    duration "^0.2.2"
-    es5-ext "^0.10.49"
-    event-emitter "^0.3.5"
-    sprintf-kit "^2.0.0"
-    type "^1.0.1"
-
-log@^6.3.1:
+log@^6.0.0, log@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/log/-/log-6.3.1.tgz#fcf9bd71fe2274a51ad608dc95c549dd7512146b"
   integrity sha512-McG47rJEWOkXTDioZzQNydAVvZNeEkSyLJ1VWkFwfW+o1knW+QSi8D1KjPn/TnctV+q99lkvJNe1f0E1IjfY2A==
@@ -7548,15 +7536,15 @@ minimist-options@4.1.0:
     is-plain-obj "^1.1.0"
     kind-of "^6.0.3"
 
-minimist@1, minimist@1.2.5, minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
-
-minimist@^1.2.6:
+minimist@1, minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
   integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==
+
+minimist@1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
+  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
 
 minipass-collect@^1.0.2:
   version "1.0.2"
@@ -10241,13 +10229,6 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
-
-sprintf-kit@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/sprintf-kit/-/sprintf-kit-2.0.0.tgz#47499d636e9cc68f2f921d30eb4f0b911a2d7835"
-  integrity sha512-/0d2YTn8ZFVpIPAU230S9ZLF8WDkSSRWvh/UOLM7zzvkCchum1TtouRgyV8OfgOaYilSGU4lSSqzwBXJVlAwUw==
-  dependencies:
-    es5-ext "^0.10.46"
 
 sprintf-kit@^2.0.1:
   version "2.0.1"

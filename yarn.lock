@@ -1334,15 +1334,15 @@
     ws "^7.5.3"
 
 "@serverless/test@^11.0.0":
-  version "11.0.0"
-  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-11.0.0.tgz#121d06e1d5f75d7cba78ca4bf1f7c74b0d0d623f"
-  integrity sha512-mBY6dyaEPvHeD9aI0I1wBF71EUPrPTuhuMts5axIlah5tWDSu1/P/NOxkwmmCuA0BqMpyy6IRburC4qoWlApWg==
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-11.0.1.tgz#5a1aed66e8b2a8dca518dc5094c0c6afaf4af752"
+  integrity sha512-0pcDn1IXEIjCKjKe+KcY8wcgueqxLdlnQ70ZuVFzhpyUySoOC5HAKJxe3JOoa84iJtCPoJZtGm5kTZPgWnemPw==
   dependencies:
     "@serverless/utils" "^6.6.0"
     bluebird "^3.7.2"
     chalk "^4.1.2"
     child-process-ext "^2.1.1"
-    cli-progress-footer "^2.3.1"
+    cli-progress-footer "^2.3.2"
     essentials "^1.2.0"
     fs-extra "^10.1.0"
     js-yaml "^4.1.0"

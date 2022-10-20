@@ -1336,11 +1336,11 @@
     ws "^7.5.3"
 
 "@serverless/test@^11.0.0":
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-11.0.2.tgz#b40c135f087408f07478b998ec5e47057a4af7e5"
-  integrity sha512-IvZ7NW6+l/AVs3Ped9UQ9TJtxuCGfxqtCLuIGBmD4wTU+TMURC90dYLSrpsLSs7oIFcdFapklUOrxwjwNRWvmg==
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@serverless/test/-/test-11.1.0.tgz#97da2d0bbca4f8c105d27531d3ed712fa1dc64d8"
+  integrity sha512-LqMyy4ydJ0OM7EBfaIt7JvAaAxa/njrW7/nOQ4fGKwYOoXWk36PRMORKo3LSj2ZtNM3LOwCkwiwQC3B2z+uD9g==
   dependencies:
-    "@serverless/utils" "^6.7.0"
+    "@serverless/utils" "^6.8.0"
     bluebird "^3.7.2"
     chalk "^4.1.2"
     child-process-ext "^2.1.1"
@@ -1360,22 +1360,22 @@
     timers-ext "^0.1.7"
     type "^2.7.2"
 
-"@serverless/utils@^6.0.3", "@serverless/utils@^6.7.0":
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/@serverless/utils/-/utils-6.7.0.tgz#7d09585749ff279f348109400c0a10a7738b547a"
-  integrity sha512-aUjkkOTJ5wH7f3raSIDeTCR4JsAbd9p5Pjs7yW3sVOmu0qiTPHZOr1x1TIkb3WDHiAoQQY8zGhfzW7zLTcAA3Q==
+"@serverless/utils@^6.0.3", "@serverless/utils@^6.7.0", "@serverless/utils@^6.8.0":
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/@serverless/utils/-/utils-6.8.0.tgz#5cd0141976cd312b40b56090ce2f52b575d0e658"
+  integrity sha512-qh1lh1Uo3hBylzqBLqJqJ7qeBcZQd6UIFULBJRz8IdPmDK1iiIO2fMV+bHQ8ZYgAfBnjJCMwwOMdSdV3KzFq1g==
   dependencies:
     archive-type "^4.0.0"
     chalk "^4.1.2"
-    ci-info "^3.3.2"
+    ci-info "^3.5.0"
     cli-progress-footer "^2.3.2"
     content-disposition "^0.5.4"
     d "^1.0.1"
     decompress "^4.2.1"
     event-emitter "^0.3.5"
-    ext "^1.6.0"
+    ext "^1.7.0"
     ext-name "^5.0.0"
-    file-type "^16.5.3"
+    file-type "^16.5.4"
     filenamify "^4.3.0"
     get-stream "^6.0.1"
     got "^11.8.5"
@@ -1387,16 +1387,16 @@
     log-node "^8.0.3"
     make-dir "^3.1.0"
     memoizee "^0.4.15"
-    ncjsm "^4.3.0"
+    ncjsm "^4.3.1"
     node-fetch "^2.6.7"
-    open "^7.4.2"
+    open "^8.4.0"
     p-event "^4.2.0"
     supports-color "^8.1.1"
     timers-ext "^0.1.7"
-    type "^2.6.0"
+    type "^2.7.2"
     uni-global "^1.0.0"
     uuid "^8.3.2"
-    write-file-atomic "^4.0.1"
+    write-file-atomic "^4.0.2"
 
 "@sindresorhus/is@^4.0.0":
   version "4.0.1"
@@ -2731,7 +2731,7 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
-ci-info@^3.3.2, ci-info@^3.5.0:
+ci-info@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.5.0.tgz#bfac2a29263de4c829d806b1ab478e35091e171f"
   integrity sha512-yH4RezKOGlOhxkmhbeNuC4eYZKAUsEaGtBuBzDDP1eFUKiccDWzBABxBfOx31IDwDIXMTxWuwAxUGModvkbuVw==
@@ -4509,10 +4509,10 @@ file-entry-cache@^6.0.1:
   dependencies:
     flat-cache "^3.0.4"
 
-file-type@^16.5.3:
-  version "16.5.3"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-16.5.3.tgz#474b7e88c74724046abb505e9b8ed4db30c4fc06"
-  integrity sha512-uVsl7iFhHSOY4bEONLlTK47iAHtNsFHWP5YE4xJfZ4rnX7S1Q3wce09XgqSC7E/xh8Ncv/be1lNoyprlUH/x6A==
+file-type@^16.5.4:
+  version "16.5.4"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-16.5.4.tgz#474fb4f704bee427681f98dd390058a172a6c2fd"
+  integrity sha512-/yFHK0aGjFEgDJjEKP0pWCplsPFPhwyfwevf/pVxiN0tmE4L9LmwWxWukdJSHdoCli4VgQLehjJtwQBnqmsKcw==
   dependencies:
     readable-web-to-node-stream "^3.0.0"
     strtok3 "^6.2.4"
@@ -11759,6 +11759,14 @@ write-file-atomic@^4.0.0, write-file-atomic@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-4.0.1.tgz#9faa33a964c1c85ff6f849b80b42a88c2c537c8f"
   integrity sha512-nSKUxgAbyioruk6hU87QzVbY279oYT6uiwgDoujth2ju4mJ+TZau7SQBhtbTmUyuNYTuXnSyRn66FV0+eCgcrQ==
+  dependencies:
+    imurmurhash "^0.1.4"
+    signal-exit "^3.0.7"
+
+write-file-atomic@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-4.0.2.tgz#a9df01ae5b77858a027fd2e80768ee433555fcfd"
+  integrity sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==
   dependencies:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.7"

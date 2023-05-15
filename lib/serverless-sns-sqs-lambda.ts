@@ -25,6 +25,7 @@ type Config = {
   kmsMasterKeyId: string;
   kmsDataKeyReusePeriodSeconds: number;
   deadLetterMessageRetentionPeriodSeconds: number;
+  deadLetterQueueEnabled: boolean;
   enabled: boolean;
   fifo: boolean;
   visibilityTimeout: number;
@@ -129,6 +130,7 @@ const addResource = (
  *             kmsMasterKeyId: alias/aws/sqs
  *             kmsDataKeyReusePeriodSeconds: 600
  *             deadLetterMessageRetentionPeriodSeconds: 1209600
+ *             deadLetterQueueEnabled: true
  *             visibilityTimeout: 120
  *             rawMessageDelivery: true
  *             enabled: false
@@ -197,6 +199,7 @@ export default class ServerlessSnsSqsLambda {
           minimum: 60,
           maximum: 1209600
         },
+        deadLetterQueueEnabled: { type: "boolean" },
         rawMessageDelivery: { type: "boolean" },
         enabled: { type: "boolean" },
         fifo: { type: "boolean" },
@@ -311,6 +314,7 @@ Usage
             kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)
             kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds
             deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)
+            deadLetterQueueEnabled: true                     # optional - default is enabled
             enabled: true                                    # optional - AWS default is true
             fifo: false                                      # optional - AWS default is false
             visibilityTimeout: 30                            # optional - AWS default is 30 seconds
@@ -354,6 +358,10 @@ Usage
       kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds:
         config.deadLetterMessageRetentionPeriodSeconds,
+      deadLetterQueueEnabled:
+        config.deadLetterQueueEnabled !== undefined
+          ? config.deadLetterQueueEnabled
+          : true,
       enabled: config.enabled,
       fifo: config.fifo !== undefined ? config.fifo : false,
       visibilityTimeout: config.visibilityTimeout,
@@ -422,9 +430,13 @@ Usage
       kmsDataKeyReusePeriodSeconds,
       deadLetterMessageRetentionPeriodSeconds,
       deadLetterQueueOverride,
+      deadLetterQueueEnabled,
       omitPhysicalId
     }
   ) {
+    if (!deadLetterQueueEnabled) {
+      return;
+    }
     const candidateQueueName = `${prefix}${name}DeadLetterQueue${
       fifo ? ".fifo" : ""
     }`;
@@ -474,7 +486,8 @@ Usage
       kmsDataKeyReusePeriodSeconds,
       visibilityTimeout,
       mainQueueOverride,
-      omitPhysicalId
+      omitPhysicalId,
+      deadLetterQueueEnabled
     }: Config
   ) {
     const candidateQueueName = `${prefix}${name}Queue${fifo ? ".fifo" : ""}`;
@@ -485,12 +498,16 @@ Usage
           ? {}
           : { QueueName: validateQueueName(candidateQueueName) }),
         ...(fifo ? { FifoQueue: true } : {}),
-        RedrivePolicy: {
-          deadLetterTargetArn: {
-            "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
-          },
-          maxReceiveCount: maxRetryCount
-        },
+        ...(deadLetterQueueEnabled
+          ? {
+              RedrivePolicy: {
+                deadLetterTargetArn: {
+                  "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
+                },
+                maxReceiveCount: maxRetryCount
+              }
+            }
+          : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
               KmsMasterKeyId: kmsMasterKeyId
@@ -581,14 +598,20 @@ Usage
    * @param {object} template the template which gets mutated
    * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
    */
-  addLambdaSqsPermissions(template, { name, kmsMasterKeyId }) {
+  addLambdaSqsPermissions(
+    template,
+    { name, kmsMasterKeyId, deadLetterQueueEnabled }
+  ) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
       // this the relevant policy to allow the lambda to access the queue.
       return;
     }
-
+    const queues = [{ "Fn::GetAtt": [`${name}Queue`, "Arn"] }];
+    if (deadLetterQueueEnabled) {
+      queues.push({ "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"] });
+    }
     template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
       {
         Effect: "Allow",
@@ -597,10 +620,7 @@ Usage
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes"
         ],
-        Resource: [
-          { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
-          { "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"] }
-        ]
+        Resource: queues
       }
     );
 

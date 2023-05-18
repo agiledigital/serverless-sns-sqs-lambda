@@ -241,10 +241,46 @@ describe("Test Serverless SNS SQS Lambda", () => {
                       kmsMasterKeyId: "some key",
                       kmsDataKeyReusePeriodSeconds: 200,
                       deadLetterMessageRetentionPeriodSeconds: 1209600,
+                      deadLetterQueueEnabled: true,
                       enabled: false,
                       visibilityTimeout: 999,
                       rawMessageDelivery: true,
                       filterPolicy: { pet: ["dog", "cat"] }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
+      });
+    });
+
+    describe("when dead letter queue is disabled", () => {
+      it("should not produce SQS dead letter queue and related IAM policies in CF template", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      deadLetterQueueEnabled: false
                     }
                   }
                 ]

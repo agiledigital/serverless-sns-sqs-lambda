@@ -7776,10 +7776,10 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
-"minimatch@3 || 4 || 5 || 6 || 7 || 8 || 9":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.0.tgz#bfc8e88a1c40ffd40c172ddac3decb8451503b56"
-  integrity sha512-0jJj8AvgKqWN05mrwuqi8QYKx1WmYSUoKSxu5Qhs9prezTz10sxAHGNZe9J9cqIJzta8DWsleh2KaVaLl6Ru2w==
+"minimatch@6 || 7 || 8 || 9":
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.1.tgz#8a555f541cf976c622daf078bb28f29fb927c253"
+  integrity sha512-0jWhJpD/MdhPXwPuiRkCbfYfSKp2qnn2eOc279qI7f+osl/l+prKSrvhg157zSYvx/1nmgn2NqdT6k2Z7zSH9w==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -11246,24 +11246,24 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-type-coverage-core@^2.25.2:
-  version "2.25.2"
-  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.25.2.tgz#d71ce0dc28d4674aa6f8807c7a7dee82601ffcdc"
-  integrity sha512-uf4us+EXtv2t5Uo+aJIOI588UW1epT4Sp7JxozfqbsBvOypd+VhcgnrSxm7Zndy4h3LBbzoXCCBzmI8oZ1u/Qw==
+type-coverage-core@^2.26.0:
+  version "2.26.0"
+  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.26.0.tgz#65674366f3804962a89ea2136cc742d7fd26d439"
+  integrity sha512-/9VQ0ySU1CKbWd/BNnbVYMJ67oOt7qdXXxm4W5VIM07AUB5eelcDjrWG7qdIj0ZafnNkpv+v5qcD68ExOVK+Sw==
   dependencies:
     fast-glob "3"
-    minimatch "3 || 4 || 5 || 6 || 7 || 8 || 9"
+    minimatch "6 || 7 || 8 || 9"
     normalize-path "3"
     tslib "1 || 2"
     tsutils "3"
 
 type-coverage@^2.14.0:
-  version "2.25.2"
-  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-2.25.2.tgz#73453f7ccc3f35a7019708e6eee1ab9dd7c7d395"
-  integrity sha512-+RwY80TOXJs7jI1BBnMoqAxuibYxblLk5NJwQEFwUW02ZqkAHav4N1/OjAue8PHu3RaG1pxfNeeuzDmjCcjTNg==
+  version "2.26.0"
+  resolved "https://registry.yarnpkg.com/type-coverage/-/type-coverage-2.26.0.tgz#1635b8c3904dcb369d9caf9321cb7a6ad8861cf5"
+  integrity sha512-ZYtfBoifzuyiZteZeqBiauugvgIVV0orMqo2jZuOGOBCndLWhQF3Iv9bbFXyyUf/1lC/+k/ZN6Noqbh2afX3LQ==
   dependencies:
     minimist "1"
-    type-coverage-core "^2.25.2"
+    type-coverage-core "^2.26.0"
 
 type-detect@4.0.8, type-detect@^4.0.8:
   version "4.0.8"

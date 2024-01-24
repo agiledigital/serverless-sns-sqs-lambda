@@ -57,6 +57,19 @@ const parseIntOr = (intString, defaultInt) => {
 };
 
 /**
+ * Converts a string from any case to camelCase.
+ *
+ * @param {string} anyCase anyCase string
+ */
+const camelCase = (anyCase: string): string =>
+  anyCase
+    .split(/[^a-zA-Z0-9]/)
+    .map((word, index) =>
+      index === 0 ? word.toLowerCase() : word[0].toUpperCase() + word.slice(1)
+    )
+    .join("");
+
+/**
  * Converts a string from camelCase to PascalCase. Basically, it just
  * capitalises the first letter.
  *
@@ -345,7 +358,7 @@ Usage
 `);
     }
 
-    const funcNamePascalCase = pascalCase(funcName);
+    const funcNamePascalCase = pascalCase(camelCase(funcName));
     return {
       ...config,
       name: config.name,
@@ -437,9 +450,8 @@ Usage
     if (!deadLetterQueueEnabled) {
       return;
     }
-    const candidateQueueName = `${prefix}${name}DeadLetterQueue${
-      fifo ? ".fifo" : ""
-    }`;
+    const candidateQueueName = `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""
+      }`;
     addResource(template, `${name}DeadLetterQueue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
@@ -449,18 +461,18 @@ Usage
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
-              KmsMasterKeyId: kmsMasterKeyId
-            }
+            KmsMasterKeyId: kmsMasterKeyId
+          }
           : {}),
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
-              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
-            }
+            KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+          }
           : {}),
         ...(deadLetterMessageRetentionPeriodSeconds !== undefined
           ? {
-              MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
-            }
+            MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
+          }
           : {}),
         ...pascalCaseAllKeys(deadLetterQueueOverride)
       }
@@ -500,28 +512,28 @@ Usage
         ...(fifo ? { FifoQueue: true } : {}),
         ...(deadLetterQueueEnabled
           ? {
-              RedrivePolicy: {
-                deadLetterTargetArn: {
-                  "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
-                },
-                maxReceiveCount: maxRetryCount
-              }
+            RedrivePolicy: {
+              deadLetterTargetArn: {
+                "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
+              },
+              maxReceiveCount: maxRetryCount
             }
+          }
           : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
-              KmsMasterKeyId: kmsMasterKeyId
-            }
+            KmsMasterKeyId: kmsMasterKeyId
+          }
           : {}),
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
-              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
-            }
+            KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+          }
           : {}),
         ...(visibilityTimeout !== undefined
           ? {
-              VisibilityTimeout: visibilityTimeout
-            }
+            VisibilityTimeout: visibilityTimeout
+          }
           : {}),
         ...pascalCaseAllKeys(mainQueueOverride)
       }
@@ -584,8 +596,8 @@ Usage
         ...(filterPolicy ? { FilterPolicy: filterPolicy } : {}),
         ...(rawMessageDelivery !== undefined
           ? {
-              RawMessageDelivery: rawMessageDelivery
-            }
+            RawMessageDelivery: rawMessageDelivery
+          }
           : {}),
         ...pascalCaseAllKeys(subscriptionOverride)
       }

@@ -450,8 +450,9 @@ Usage
     if (!deadLetterQueueEnabled) {
       return;
     }
-    const candidateQueueName = `${prefix}${name}DeadLetterQueue${fifo ? ".fifo" : ""
-      }`;
+    const candidateQueueName = `${prefix}${name}DeadLetterQueue${
+      fifo ? ".fifo" : ""
+    }`;
     addResource(template, `${name}DeadLetterQueue`, {
       Type: "AWS::SQS::Queue",
       Properties: {
@@ -461,18 +462,18 @@ Usage
         ...(fifo ? { FifoQueue: true } : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
-            KmsMasterKeyId: kmsMasterKeyId
-          }
+              KmsMasterKeyId: kmsMasterKeyId
+            }
           : {}),
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
-            KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
-          }
+              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
           : {}),
         ...(deadLetterMessageRetentionPeriodSeconds !== undefined
           ? {
-            MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
-          }
+              MessageRetentionPeriod: deadLetterMessageRetentionPeriodSeconds
+            }
           : {}),
         ...pascalCaseAllKeys(deadLetterQueueOverride)
       }
@@ -512,28 +513,28 @@ Usage
         ...(fifo ? { FifoQueue: true } : {}),
         ...(deadLetterQueueEnabled
           ? {
-            RedrivePolicy: {
-              deadLetterTargetArn: {
-                "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
-              },
-              maxReceiveCount: maxRetryCount
+              RedrivePolicy: {
+                deadLetterTargetArn: {
+                  "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"]
+                },
+                maxReceiveCount: maxRetryCount
+              }
             }
-          }
           : {}),
         ...(kmsMasterKeyId !== undefined
           ? {
-            KmsMasterKeyId: kmsMasterKeyId
-          }
+              KmsMasterKeyId: kmsMasterKeyId
+            }
           : {}),
         ...(kmsDataKeyReusePeriodSeconds !== undefined
           ? {
-            KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
-          }
+              KmsDataKeyReusePeriodSeconds: kmsDataKeyReusePeriodSeconds
+            }
           : {}),
         ...(visibilityTimeout !== undefined
           ? {
-            VisibilityTimeout: visibilityTimeout
-          }
+              VisibilityTimeout: visibilityTimeout
+            }
           : {}),
         ...pascalCaseAllKeys(mainQueueOverride)
       }
@@ -596,8 +597,8 @@ Usage
         ...(filterPolicy ? { FilterPolicy: filterPolicy } : {}),
         ...(rawMessageDelivery !== undefined
           ? {
-            RawMessageDelivery: rawMessageDelivery
-          }
+              RawMessageDelivery: rawMessageDelivery
+            }
           : {}),
         ...pascalCaseAllKeys(subscriptionOverride)
       }

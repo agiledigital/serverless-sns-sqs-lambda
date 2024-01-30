@@ -36,19 +36,6 @@ var parseIntOr = function (intString, defaultInt) {
     }
 };
 /**
- * Converts a string from any case to camelCase.
- *
- * @param {string} anyCase anyCase string
- */
-var camelCase = function (anyCase) {
-    return anyCase
-        .split(/[^a-zA-Z0-9]/)
-        .map(function (word, index) {
-        return index === 0 ? word.toLowerCase() : word[0].toUpperCase() + word.slice(1);
-    })
-        .join("");
-};
-/**
  * Converts a string from camelCase to PascalCase. Basically, it just
  * capitalises the first letter.
  *
@@ -248,7 +235,7 @@ var ServerlessSnsSqsLambda = /** @class */ (function () {
         if (!config.topicArn || !config.name) {
             throw new Error("Error:\nWhen creating an snsSqs handler, you must define the name and topicArn.\nIn function [" + funcName + "]:\n- name was [" + config.name + "]\n- topicArn was [" + config.topicArn + "].\n\nUsage\n-----\n\n  functions:\n    processEvent:\n      handler: handler.handler\n      events:\n        - snsSqs:\n            name: Event                                      # required\n            topicArn: !Ref TopicArn                          # required\n            prefix: some-prefix                              # optional - default is `${this.serviceName}-${stage}-${funcNamePascalCase}`\n            maxRetryCount: 2                                 # optional - default is 5\n            batchSize: 1                                     # optional - default is 10\n            batchWindow: 10                                  # optional - default is 0 (no batch window)\n            kmsMasterKeyId: alias/aws/sqs                    # optional - default is none (no encryption)\n            kmsDataKeyReusePeriodSeconds: 600                # optional - AWS default is 300 seconds\n            deadLetterMessageRetentionPeriodSeconds: 1209600 # optional - AWS default is 345600 secs (4 days)\n            deadLetterQueueEnabled: true                     # optional - default is enabled\n            enabled: true                                    # optional - AWS default is true\n            fifo: false                                      # optional - AWS default is false\n            visibilityTimeout: 30                            # optional - AWS default is 30 seconds\n            rawMessageDelivery: false                        # optional - default is false\n            filterPolicy:\n              pet:\n                - dog\n                - cat\n\n            # Overrides for generated CloudFormation templates\n            # Mirrors the CloudFormation docs but uses camel case instead of title case\n            #\n            #\n            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html\n            mainQueueOverride:\n              maximumMessageSize: 1024\n              ...\n            deadLetterQueueOverride:\n              maximumMessageSize: 1024\n              ...\n            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-eventsourcemapping.html\n            eventSourceMappingOverride:\n              bisectBatchOnFunctionError: true\n            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html\n            subscriptionOverride:\n              rawMessageDelivery: true\n\n");
         }
-        var funcNamePascalCase = pascalCase(camelCase(funcName));
+        var funcNamePascalCase = this.serverless.providers.aws.naming.getNormalizedFunctionName(funcName);
         return __assign(__assign({}, config), { name: config.name, funcName: funcNamePascalCase, prefix: config.prefix || this.serviceName + "-" + stage + "-" + funcNamePascalCase, batchSize: parseIntOr(config.batchSize, 10), maxRetryCount: parseIntOr(config.maxRetryCount, 5), kmsMasterKeyId: config.kmsMasterKeyId, kmsDataKeyReusePeriodSeconds: config.kmsDataKeyReusePeriodSeconds, deadLetterMessageRetentionPeriodSeconds: config.deadLetterMessageRetentionPeriodSeconds, deadLetterQueueEnabled: config.deadLetterQueueEnabled !== undefined
                 ? config.deadLetterQueueEnabled
                 : true, enabled: config.enabled, fifo: config.fifo !== undefined ? config.fifo : false, visibilityTimeout: config.visibilityTimeout, rawMessageDelivery: config.rawMessageDelivery !== undefined

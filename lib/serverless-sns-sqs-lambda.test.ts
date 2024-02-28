@@ -242,6 +242,7 @@ describe("Test Serverless SNS SQS Lambda", () => {
                       kmsDataKeyReusePeriodSeconds: 200,
                       deadLetterMessageRetentionPeriodSeconds: 1209600,
                       deadLetterQueueEnabled: true,
+                      lambdaSqsPermissionsEnabled: true,
                       enabled: false,
                       visibilityTimeout: 999,
                       rawMessageDelivery: true,
@@ -281,6 +282,41 @@ describe("Test Serverless SNS SQS Lambda", () => {
                       name: "some-name",
                       topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
                       deadLetterQueueEnabled: false
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
+      });
+    });
+
+    describe("when queue policy is disabled", () => {
+      it("should not produce IAM queue policy in the CF template", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      lambdaSqsPermissionsEnabled: false
                     }
                   }
                 ]

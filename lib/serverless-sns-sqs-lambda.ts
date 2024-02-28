@@ -345,7 +345,7 @@ Usage
 `);
     }
 
-    const funcNamePascalCase = pascalCase(funcName);
+    const funcNamePascalCase = this.serverless.providers.aws.naming.getNormalizedFunctionName(funcName);
     return {
       ...config,
       name: config.name,

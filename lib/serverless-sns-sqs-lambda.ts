@@ -233,46 +233,56 @@ export default class ServerlessSnsSqsLambda {
     const template =
       this.serverless.service.provider.compiledCloudFormationTemplate;
 
+    const snsSqsEvents = this.getValidSnsSqsEvents(functions);
+
+    snsSqsEvents.forEach(snsSqsEvent => {
+      if (this.options.verbose) {
+        console.info(
+          `Adding snsSqs event handler [${JSON.stringify(snsSqsEvent)}]`
+        );
+      }
+      this.addSnsSqsResources(template, snsSqsEvent);
+    });
+
+    this.addLambdaSqsPermissions(template, snsSqsEvents);
+  }
+
+  /**
+   *
+   * @param functions functions from serverless
+   * @returns an array of valid snsSqs events
+   */
+  getValidSnsSqsEvents(functions): Config[] {
+    const snsSqsEvents = [];
     Object.keys(functions).forEach(funcKey => {
       const func = functions[funcKey];
       if (func.events) {
         func.events.forEach(event => {
           if (event.snsSqs) {
-            if (this.options.verbose) {
-              console.info(
-                `Adding snsSqs event handler [${JSON.stringify(event.snsSqs)}]`
-              );
-            }
-            this.addSnsSqsResources(
-              template,
-              funcKey,
-              this.stage,
-              event.snsSqs
+            snsSqsEvents.push(
+              this.validateConfig(funcKey, this.stage, event.snsSqs)
             );
           }
         });
       }
     });
+
+    return snsSqsEvents;
   }
 
   /**
    *
    * @param {object} template the template which gets mutated
-   * @param {string} funcName the name of the function from serverless config
-   * @param {string} stage the stage name from the serverless config
-   * @param {object} snsSqsConfig the configuration values from the snsSqs
+   * @param {object} snsSqsConfig the validated configuration values from the snsSqs
    *  event portion of the serverless function config
    */
-  addSnsSqsResources(template, funcName, stage, snsSqsConfig) {
-    const config = this.validateConfig(funcName, stage, snsSqsConfig);
-
+  addSnsSqsResources(template, config) {
     [
       this.addEventSourceMapping,
       this.addEventDeadLetterQueue,
       this.addEventQueue,
       this.addEventQueuePolicy,
-      this.addTopicSubscription,
-      this.addLambdaSqsPermissions
+      this.addTopicSubscription
     ].reduce((template, func) => {
       func(template, config);
       return template;
@@ -596,49 +606,62 @@ Usage
    * Add permissions so that the SQS handler can access the queue.
    *
    * @param {object} template the template which gets mutated
-   * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
+   * @param {Config[]} array of valid snsSqsEvents
    */
-  addLambdaSqsPermissions(
-    template,
-    { name, kmsMasterKeyId, deadLetterQueueEnabled }
-  ) {
+  addLambdaSqsPermissions(template, snsSqsEvents: Config[]) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
       // this the relevant policy to allow the lambda to access the queue.
       return;
     }
-    const queues = [{ "Fn::GetAtt": [`${name}Queue`, "Arn"] }];
-    if (deadLetterQueueEnabled) {
-      queues.push({ "Fn::GetAtt": [`${name}DeadLetterQueue`, "Arn"] });
-    }
-    template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
-      {
-        Effect: "Allow",
-        Action: [
-          "sqs:ReceiveMessage",
-          "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes"
-        ],
-        Resource: queues
-      }
-    );
 
-    if (kmsMasterKeyId !== undefined && kmsMasterKeyId !== null) {
-      // TODO: Should we rename kmsMasterKeyId to make it clearer that it can accept an ARN?
-      const resource =
-        // If the key ID is an object, it is most likely a "Ref" or "GetAtt" so we should pass it straight through so it gets resolved by CloudFormation
-        // If an ARN is provided, pass it straight through too, because no processing is needed
-        // Otherwise if it isn't either of those things, it is probably an ID, so we need to
-        // transform it to an ARN to make the policy valid
-        typeof kmsMasterKeyId === "object" || isKmsArn(kmsMasterKeyId)
-          ? kmsMasterKeyId
-          : `arn:aws:kms:::key/${kmsMasterKeyId}`;
+    const newQueueNames: string[] = [];
+    const kmsMasterKeyIds = new Set<string>();
+
+    snsSqsEvents.forEach(snsSqsEvent => {
+      newQueueNames.push(`${snsSqsEvent.name}Queue`);
+      if (snsSqsEvent.deadLetterQueueEnabled) {
+        newQueueNames.push(`${snsSqsEvent.name}DeadLetterQueue`);
+      }
+
+      const { kmsMasterKeyId } = snsSqsEvent;
+      if (kmsMasterKeyId !== undefined && kmsMasterKeyId !== null) {
+        // TODO: Should we rename kmsMasterKeyId to make it clearer that it can accept an ARN?
+        const resource =
+          // If the key ID is an object, it is most likely a "Ref" or "GetAtt" so we should pass it straight through so it gets resolved by CloudFormation
+          // If an ARN is provided, pass it straight through too, because no processing is needed
+          // Otherwise if it isn't either of those things, it is probably an ID, so we need to
+          // transform it to an ARN to make the policy valid
+          typeof kmsMasterKeyId === "object" || isKmsArn(kmsMasterKeyId)
+            ? kmsMasterKeyId
+            : `arn:aws:kms:::key/${kmsMasterKeyId}`;
+        kmsMasterKeyIds.add(resource);
+      }
+    });
+
+    if (newQueueNames.length) {
+      template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
+        {
+          Effect: "Allow",
+          Action: [
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes"
+          ],
+          Resource: newQueueNames.map(queueName => {
+            return { "Fn::GetAtt": [queueName, "Arn"] };
+          })
+        }
+      );
+    }
+
+    if (kmsMasterKeyIds.size) {
       template.Resources.IamRoleLambdaExecution.Properties.Policies[0].PolicyDocument.Statement.push(
         {
           Effect: "Allow",
           Action: ["kms:Decrypt"],
-          Resource: resource
+          Resource: Array.from(kmsMasterKeyIds)
         }
       );
     }

@@ -600,7 +600,9 @@ Object {
                     "kms:Decrypt",
                   ],
                   "Effect": "Allow",
-                  "Resource": "arn:aws:kms:::key/some key",
+                  "Resource": Array [
+                    "arn:aws:kms:::key/some key",
+                  ],
                 },
               ],
               "Version": "2012-10-17",
@@ -2463,6 +2465,659 @@ Object {
                 ],
               },
               "Sid": "some prefixsome-nameSid",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "some-nameQueue",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+  },
+}
+`;
+
+exports[`Test Serverless SNS SQS Lambda when the provider is specified via a command line option when there are multiple functions with snsSqs should produce an IAM role with merged resources 1`] = `
+Object {
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Outputs": Object {
+    "ServerlessDeploymentBucketName": Object {
+      "Export": Object {
+        "Name": "sls-test-service-dev-test-ServerlessDeploymentBucketName",
+      },
+      "Value": Object {
+        "Ref": "ServerlessDeploymentBucket",
+      },
+    },
+    "TestDashfunction2LambdaFunctionQualifiedArn": Object {
+      "Description": "Current Lambda function version",
+      "Export": Object {
+        "Name": "sls-test-service-dev-test-TestDashfunction2LambdaFunctionQualifiedArn",
+      },
+      "Value": Object {
+        "Ref": "TestDashfunction2LambdaVersionpkdbJVGn15K2PFByNWdnzkZM3ZUwNbbAp5oPLsIIdQ",
+      },
+    },
+    "TestDashfunction3LambdaFunctionQualifiedArn": Object {
+      "Description": "Current Lambda function version",
+      "Export": Object {
+        "Name": "sls-test-service-dev-test-TestDashfunction3LambdaFunctionQualifiedArn",
+      },
+      "Value": Object {
+        "Ref": "TestDashfunction3LambdaVersionSTVDvOa0K2Ydms9BOyRe9ijY3Pl3fDllGNEwG9HSw",
+      },
+    },
+    "TestDashfunctionLambdaFunctionQualifiedArn": Object {
+      "Description": "Current Lambda function version",
+      "Export": Object {
+        "Name": "sls-test-service-dev-test-TestDashfunctionLambdaFunctionQualifiedArn",
+      },
+      "Value": Object {
+        "Ref": "TestDashfunctionLambdaVersionA6M23sE6AN9SgN5IQgI9bd1tqh7YgxtybZ9LOhkLY4",
+      },
+    },
+  },
+  "Resources": Object {
+    "IamRoleLambdaExecution": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sts:AssumeRole",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Array [
+                  "lambda.amazonaws.com",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Path": "/",
+        "Policies": Array [
+          Object {
+            "PolicyDocument": Object {
+              "Statement": Array [
+                Object {
+                  "Action": Array [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/test-service-dev-test*:*",
+                    },
+                  ],
+                },
+                Object {
+                  "Action": Array [
+                    "logs:PutLogEvents",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::Sub": "arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:/aws/lambda/test-service-dev-test*:*:*",
+                    },
+                  ],
+                },
+                Object {
+                  "Action": Array [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-nameQueue",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-nameDeadLetterQueue",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-name2Queue",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-name2DeadLetterQueue",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-name3Queue",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "some-name3DeadLetterQueue",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+                Object {
+                  "Action": Array [
+                    "kms:Decrypt",
+                  ],
+                  "Effect": "Allow",
+                  "Resource": Array [
+                    "arn:aws:kms:::key/kms1",
+                    "arn:aws:kms:::key/kms2",
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": Object {
+              "Fn::Join": Array [
+                "-",
+                Array [
+                  "test-service",
+                  "dev-test",
+                  "lambda",
+                ],
+              ],
+            },
+          },
+        ],
+        "RoleName": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              "test-service",
+              "dev-test",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "lambdaRole",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ServerlessDeploymentBucket": Object {
+      "Properties": Object {
+        "BucketEncryption": Object {
+          "ServerSideEncryptionConfiguration": Array [
+            Object {
+              "ServerSideEncryptionByDefault": Object {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+    },
+    "ServerlessDeploymentBucketPolicy": Object {
+      "Properties": Object {
+        "Bucket": Object {
+          "Ref": "ServerlessDeploymentBucket",
+        },
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": false,
+                },
+              },
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "ServerlessDeploymentBucket",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Ref": "ServerlessDeploymentBucket",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "Subscribesome-name2Topic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-name2Queue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic2",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Subscribesome-name3Topic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-name3Queue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic3",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Subscribesome-nameTopic": Object {
+      "Properties": Object {
+        "Endpoint": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "Protocol": "sqs",
+        "RawMessageDelivery": false,
+        "TopicArn": "arn:aws:sns:us-east-2:123456789012:MyTopic",
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "Test-function2EventSourceMappingSQSsome-name2Queue": Object {
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-name2Queue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-function2LambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "Test-function3EventSourceMappingSQSsome-name3Queue": Object {
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-name3Queue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-function3LambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "Test-functionEventSourceMappingSQSsome-nameQueue": Object {
+      "Properties": Object {
+        "BatchSize": 10,
+        "Enabled": "True",
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "some-nameQueue",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "Test-functionLambdaFunction",
+            "Arn",
+          ],
+        },
+        "MaximumBatchingWindowInSeconds": 0,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "TestDashfunction2LambdaFunction": Object {
+      "DependsOn": Array [
+        "TestDashfunction2LogGroup",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "ServerlessDeploymentBucket",
+          },
+          "S3Key": Any<String>,
+        },
+        "FunctionName": "test-service-dev-test-test-function2",
+        "Handler": "handler2.handler",
+        "MemorySize": 1024,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "IamRoleLambdaExecution",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 6,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "TestDashfunction2LambdaVersionpkdbJVGn15K2PFByNWdnzkZM3ZUwNbbAp5oPLsIIdQ": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "CodeSha256": "gxQ2/ARVAXYSjz4OF5PnsOiOB+yUlXG8z5y5h6bNs7U=",
+        "FunctionName": Object {
+          "Ref": "TestDashfunction2LambdaFunction",
+        },
+      },
+      "Type": "AWS::Lambda::Version",
+    },
+    "TestDashfunction2LogGroup": Object {
+      "Properties": Object {
+        "LogGroupName": "/aws/lambda/test-service-dev-test-test-function2",
+      },
+      "Type": "AWS::Logs::LogGroup",
+    },
+    "TestDashfunction3LambdaFunction": Object {
+      "DependsOn": Array [
+        "TestDashfunction3LogGroup",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "ServerlessDeploymentBucket",
+          },
+          "S3Key": Any<String>,
+        },
+        "FunctionName": "test-service-dev-test-test-function3",
+        "Handler": "handler3.handler",
+        "MemorySize": 1024,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "IamRoleLambdaExecution",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 6,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "TestDashfunction3LambdaVersionSTVDvOa0K2Ydms9BOyRe9ijY3Pl3fDllGNEwG9HSw": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "CodeSha256": "gxQ2/ARVAXYSjz4OF5PnsOiOB+yUlXG8z5y5h6bNs7U=",
+        "FunctionName": Object {
+          "Ref": "TestDashfunction3LambdaFunction",
+        },
+      },
+      "Type": "AWS::Lambda::Version",
+    },
+    "TestDashfunction3LogGroup": Object {
+      "Properties": Object {
+        "LogGroupName": "/aws/lambda/test-service-dev-test-test-function3",
+      },
+      "Type": "AWS::Logs::LogGroup",
+    },
+    "TestDashfunctionLambdaFunction": Object {
+      "DependsOn": Array [
+        "TestDashfunctionLogGroup",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Ref": "ServerlessDeploymentBucket",
+          },
+          "S3Key": Any<String>,
+        },
+        "FunctionName": "test-service-dev-test-test-function",
+        "Handler": "handler.handler",
+        "MemorySize": 1024,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "IamRoleLambdaExecution",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 6,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "TestDashfunctionLambdaVersionA6M23sE6AN9SgN5IQgI9bd1tqh7YgxtybZ9LOhkLY4": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "CodeSha256": "gxQ2/ARVAXYSjz4OF5PnsOiOB+yUlXG8z5y5h6bNs7U=",
+        "FunctionName": Object {
+          "Ref": "TestDashfunctionLambdaFunction",
+        },
+      },
+      "Type": "AWS::Lambda::Version",
+    },
+    "TestDashfunctionLogGroup": Object {
+      "Properties": Object {
+        "LogGroupName": "/aws/lambda/test-service-dev-test-test-function",
+      },
+      "Type": "AWS::Logs::LogGroup",
+    },
+    "some-name2DeadLetterQueue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "kms2",
+        "QueueName": "test-service-dev-test-Test-function2some-name2DeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-name2Queue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "kms2",
+        "QueueName": "test-service-dev-test-Test-function2some-name2Queue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-name2DeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-name2QueuePolicy": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Id": "test-service-dev-test-Test-function2some-name2Queue",
+          "Statement": Array [
+            Object {
+              "Action": "SQS:SendMessage",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "aws:SourceArn": Array [
+                    "arn:aws:sns:us-east-2:123456789012:MyTopic2",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "sns.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "some-name2Queue",
+                  "Arn",
+                ],
+              },
+              "Sid": "test-service-dev-test-Test-function2some-name2Sid",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "some-name2Queue",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "some-name3DeadLetterQueue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "arn:aws:kms:::key/kms2",
+        "QueueName": "test-service-dev-test-Test-function3some-name3DeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-name3Queue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "arn:aws:kms:::key/kms2",
+        "QueueName": "test-service-dev-test-Test-function3some-name3Queue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-name3DeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-name3QueuePolicy": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Id": "test-service-dev-test-Test-function3some-name3Queue",
+          "Statement": Array [
+            Object {
+              "Action": "SQS:SendMessage",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "aws:SourceArn": Array [
+                    "arn:aws:sns:us-east-2:123456789012:MyTopic3",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "sns.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "some-name3Queue",
+                  "Arn",
+                ],
+              },
+              "Sid": "test-service-dev-test-Test-function3some-name3Sid",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "some-name3Queue",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "some-nameDeadLetterQueue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "kms1",
+        "QueueName": "test-service-dev-test-Test-functionsome-nameDeadLetterQueue",
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueue": Object {
+      "Properties": Object {
+        "KmsMasterKeyId": "kms1",
+        "QueueName": "test-service-dev-test-Test-functionsome-nameQueue",
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "some-nameDeadLetterQueue",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+      },
+      "Type": "AWS::SQS::Queue",
+    },
+    "some-nameQueuePolicy": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Id": "test-service-dev-test-Test-functionsome-nameQueue",
+          "Statement": Array [
+            Object {
+              "Action": "SQS:SendMessage",
+              "Condition": Object {
+                "ArnEquals": Object {
+                  "aws:SourceArn": Array [
+                    "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "sns.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "some-nameQueue",
+                  "Arn",
+                ],
+              },
+              "Sid": "test-service-dev-test-Test-functionsome-nameSid",
             },
           ],
           "Version": "2012-10-17",

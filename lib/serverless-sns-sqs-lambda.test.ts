@@ -464,6 +464,75 @@ describe("Test Serverless SNS SQS Lambda", () => {
         });
       });
     });
+
+    describe("when there are multiple functions with snsSqs", () => {
+      it("should produce an IAM role with merged resources", async () => {
+        const { cfTemplate } = await runServerless(serverlessPath, {
+          command: "package",
+          config: {
+            ...baseConfig,
+            functions: {
+              ["test-function"]: {
+                handler: "handler.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic",
+                      kmsMasterKeyId: "kms1"
+                    }
+                  }
+                ]
+              },
+              ["test-function2"]: {
+                handler: "handler2.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name2",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic2",
+                      kmsMasterKeyId: "kms2"
+                    }
+                  }
+                ]
+              },
+              ["test-function3"]: {
+                handler: "handler3.handler",
+                events: [
+                  {
+                    snsSqs: {
+                      name: "some-name3",
+                      topicArn: "arn:aws:sns:us-east-2:123456789012:MyTopic3",
+                      kmsMasterKeyId: "arn:aws:kms:::key/kms2"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        });
+
+        expect(cfTemplate).toMatchSnapshot({
+          Resources: {
+            TestDashfunctionLambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            },
+            TestDashfunction2LambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            },
+            TestDashfunction3LambdaFunction: {
+              Properties: {
+                Code: { S3Key: expect.any(String) }
+              }
+            }
+          }
+        });
+      });
+    });
   });
 
   describe("when the provider is specified via a config option in serverless.yml", () => {
@@ -507,10 +576,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -540,10 +608,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -590,10 +657,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -623,10 +689,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -670,10 +735,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -703,10 +767,9 @@ describe("Test Serverless SNS SQS Lambda", () => {
         );
         serverlessSnsSqsLambda.addEventSourceMapping(template, validatedConfig);
         serverlessSnsSqsLambda.addTopicSubscription(template, validatedConfig);
-        serverlessSnsSqsLambda.addLambdaSqsPermissions(
-          template,
+        serverlessSnsSqsLambda.addLambdaSqsPermissions(template, [
           validatedConfig
-        );
+        ]);
 
         expect(template).toMatchSnapshot();
       });
@@ -744,19 +807,20 @@ describe("Test Serverless SNS SQS Lambda", () => {
           }
         } as const;
 
+        const fn1Config = serverlessSnsSqsLambda.validateConfig(
+          "Fn1",
+          "unit-test",
+          testCase.functions.Fn1.events[0].snsSqs
+        );
+        const fn2Config = serverlessSnsSqsLambda.validateConfig(
+          "Fn2",
+          "unit-test",
+          testCase.functions.Fn2.events[0].snsSqs
+        );
+
         const thunk = () => {
-          serverlessSnsSqsLambda.addSnsSqsResources(
-            template,
-            "Fn1",
-            "unit-test",
-            testCase.functions.Fn1.events[0].snsSqs
-          );
-          serverlessSnsSqsLambda.addSnsSqsResources(
-            template,
-            "Fn2",
-            "unit-test",
-            testCase.functions.Fn2.events[0].snsSqs
-          );
+          serverlessSnsSqsLambda.addSnsSqsResources(template, fn1Config);
+          serverlessSnsSqsLambda.addSnsSqsResources(template, fn2Config);
         };
 
         expect(thunk).toThrowErrorMatchingInlineSnapshot(
@@ -789,13 +853,13 @@ describe("Test Serverless SNS SQS Lambda", () => {
             }
           } as const;
 
+          const fn1Config = serverlessSnsSqsLambda.validateConfig(
+            "Fn1",
+            "unit-test",
+            testCase.functions.Fn1.events[0].snsSqs
+          );
           const thunk = () => {
-            serverlessSnsSqsLambda.addSnsSqsResources(
-              template,
-              "Fn1",
-              "unit-test",
-              testCase.functions.Fn1.events[0].snsSqs
-            );
+            serverlessSnsSqsLambda.addSnsSqsResources(template, fn1Config);
           };
 
           expect(thunk).toThrowErrorMatchingInlineSnapshot(
@@ -828,12 +892,12 @@ describe("Test Serverless SNS SQS Lambda", () => {
           }
         } as const;
 
-        serverlessSnsSqsLambda.addSnsSqsResources(
-          template,
+        const fn1Config = serverlessSnsSqsLambda.validateConfig(
           "Fn1",
           "unit-test",
           testCase.functions.Fn1.events[0].snsSqs
         );
+        serverlessSnsSqsLambda.addSnsSqsResources(template, fn1Config);
 
         const regularQueueName =
           template.Resources["over-80-characters-which-is-no-goodQueue"]

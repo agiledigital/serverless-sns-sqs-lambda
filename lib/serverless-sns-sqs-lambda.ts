@@ -245,6 +245,7 @@ export default class ServerlessSnsSqsLambda {
             }
             this.addSnsSqsResources(
               template,
+              func,
               funcKey,
               this.stage,
               event.snsSqs
@@ -263,7 +264,7 @@ export default class ServerlessSnsSqsLambda {
    * @param {object} snsSqsConfig the configuration values from the snsSqs
    *  event portion of the serverless function config
    */
-  addSnsSqsResources(template, funcName, stage, snsSqsConfig) {
+  addSnsSqsResources(template, func, funcName, stage, snsSqsConfig) {
     const config = this.validateConfig(funcName, stage, snsSqsConfig);
 
     [
@@ -273,8 +274,8 @@ export default class ServerlessSnsSqsLambda {
       this.addEventQueuePolicy,
       this.addTopicSubscription,
       this.addLambdaSqsPermissions
-    ].reduce((template, func) => {
-      func(template, config);
+    ].reduce((template, f) => {
+      f(template, func, config);
       return template;
     }, template);
   }
@@ -386,6 +387,7 @@ Usage
    */
   addEventSourceMapping(
     template,
+    func,
     {
       funcName,
       name,
@@ -405,7 +407,7 @@ Usage
             ? maximumBatchingWindowInSeconds
             : 0,
         EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
-        FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
+        FunctionName: func.provisionedConcurrency ? { Ref: `${funcName}ProvConcLambdaAlias` } : { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
         Enabled: enabledWithDefault ? "True" : "False",
         ...pascalCaseAllKeys(eventSourceMappingOverride)
       }
@@ -422,6 +424,7 @@ Usage
    */
   addEventDeadLetterQueue(
     template,
+    func,
     {
       name,
       prefix,
@@ -477,6 +480,7 @@ Usage
    */
   addEventQueue(
     template,
+    func,
     {
       name,
       prefix,
@@ -535,7 +539,7 @@ Usage
    * @param {{name, prefix, topicArn}} config including name of the queue, the
    *  resource prefix and the arn of the topic
    */
-  addEventQueuePolicy(template, { name, prefix, topicArn }: Config) {
+  addEventQueuePolicy(template, func, { name, prefix, topicArn }: Config) {
     addResource(template, `${name}QueuePolicy`, {
       Type: "AWS::SQS::QueuePolicy",
       Properties: {
@@ -567,6 +571,7 @@ Usage
    */
   addTopicSubscription(
     template,
+    func,
     {
       name,
       topicArn,
@@ -600,6 +605,7 @@ Usage
    */
   addLambdaSqsPermissions(
     template,
+    func,
     { name, kmsMasterKeyId, deadLetterQueueEnabled }
   ) {
     if (template.Resources.IamRoleLambdaExecution === undefined) {

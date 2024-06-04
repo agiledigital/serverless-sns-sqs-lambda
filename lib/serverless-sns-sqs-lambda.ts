@@ -395,6 +395,12 @@ Usage
       eventSourceMappingOverride
     }: Config
   ) {
+    const func = this.serverless.service.functions[funcName];
+    let cfFuncName = funcName + "LambdaFunction";
+    if (func.provisionedConcurrency && func.provisionedConcurrency > 0) {
+      // If provisioned concurrency is enabled, we need to add the event source to the alias.
+      cfFuncName += "ProvConcLambdaAlias";
+    }
     const enabledWithDefault = enabled !== undefined ? enabled : true;
     addResource(template, `${funcName}EventSourceMappingSQS${name}Queue`, {
       Type: "AWS::Lambda::EventSourceMapping",
@@ -405,7 +411,7 @@ Usage
             ? maximumBatchingWindowInSeconds
             : 0,
         EventSourceArn: { "Fn::GetAtt": [`${name}Queue`, "Arn"] },
-        FunctionName: { "Fn::GetAtt": [`${funcName}LambdaFunction`, "Arn"] },
+        FunctionName: { "Fn::GetAtt": [`${cfFuncName}`, "Arn"] },
         Enabled: enabledWithDefault ? "True" : "False",
         ...pascalCaseAllKeys(eventSourceMappingOverride)
       }

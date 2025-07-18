@@ -1,7 +1,7 @@
 "use strict";
 
 import CLI from "serverless/lib/classes/cli";
-import Serverless from "serverless/lib/serverless";
+const Serverless = require('serverless');
 import AwsProvider from "serverless/lib/plugins/aws/provider";
 import ServerlessSnsSqsLambda from "./serverless-sns-sqs-lambda";
 // See https://github.com/serverless/test/blob/71746cd0e0c897de50e19bc96a3968e5f26bee4f/docs/run-serverless.md for more info on run-serverless

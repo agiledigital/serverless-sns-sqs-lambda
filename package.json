@@ -33,7 +33,6 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.1",
     "@commitlint/config-conventional": "^17.0.0",
-    "@jedmao/semantic-release-npm-github-config": "^1.0.9",
     "@serverless/test": "^11.0.0",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.6.0",

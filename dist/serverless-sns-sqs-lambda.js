@@ -406,11 +406,21 @@ var ServerlessSnsSqsLambda = /** @class */ (function () {
      * @param {{name, prefix}} config the name of the queue the lambda is subscribed to
      */
     ServerlessSnsSqsLambda.prototype.addLambdaSqsPermissions = function (template, func, _a) {
+        var _b, _c, _d, _e, _f;
         var name = _a.name, kmsMasterKeyId = _a.kmsMasterKeyId, deadLetterQueueEnabled = _a.deadLetterQueueEnabled;
         if (template.Resources.IamRoleLambdaExecution === undefined) {
             // The user has set their own custom role ARN so the Serverless generated role is not generated
             // We can safely skip this step because the owner of the custom role ARN is responsible for setting
             // this the relevant policy to allow the lambda to access the queue.
+            return;
+        }
+        // Check if the default role is disabled (empty statements array means users want to manage IAM themselves)
+        // This prevents hitting the 10KB IAM policy limit when there are many snsSqs events
+        if (((_f = (_e = (_d = (_c = (_b = template.Resources.IamRoleLambdaExecution.Properties) === null || _b === void 0 ? void 0 : _b.Policies) === null || _c === void 0 ? void 0 : _c[0]) === null || _d === void 0 ? void 0 : _d.PolicyDocument) === null || _e === void 0 ? void 0 : _e.Statement) === null || _f === void 0 ? void 0 : _f.length) === 0) {
+            // User has explicitly disabled default IAM role management
+            // They are responsible for adding SQS permissions to their custom per-function roles
+            this.serverless.cli.log("[serverless-sns-sqs-lambda] Skipping IAM management for ".concat(name, " - provider.iam.role.statements is empty. ") +
+                "Ensure your custom roles have SQS permissions for queue: ".concat(name));
             return;
         }
         var sanitizedName = sanitizeLogicalId(name);

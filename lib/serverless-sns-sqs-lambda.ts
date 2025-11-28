@@ -632,21 +632,6 @@ Usage
       // this the relevant policy to allow the lambda to access the queue.
       return;
     }
-
-    // Check if the default role is disabled (empty statements array means users want to manage IAM themselves)
-    // This prevents hitting the 10KB IAM policy limit when there are many snsSqs events
-    if (
-      template.Resources.IamRoleLambdaExecution.Properties?.Policies?.[0]?.PolicyDocument?.Statement?.length === 0
-    ) {
-      // User has explicitly disabled default IAM role management
-      // They are responsible for adding SQS permissions to their custom per-function roles
-      this.serverless.cli.log(
-        `[serverless-sns-sqs-lambda] Skipping IAM management for ${name} - provider.iam.role.statements is empty. ` +
-        `Ensure your custom roles have SQS permissions for queue: ${name}`
-      );
-      return;
-    }
-
     const sanitizedName = sanitizeLogicalId(name);
     const queues = [{ "Fn::GetAtt": [`${sanitizedName}`, "Arn"] }];
     if (deadLetterQueueEnabled) {

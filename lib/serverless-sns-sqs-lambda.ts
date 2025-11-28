@@ -626,6 +626,8 @@ Usage
     func,
     { name, kmsMasterKeyId, deadLetterQueueEnabled }
   ) {
+    // Override immediate return, we manage IAM ourselves per lambda
+    return;
     if (template.Resources.IamRoleLambdaExecution === undefined) {
       // The user has set their own custom role ARN so the Serverless generated role is not generated
       // We can safely skip this step because the owner of the custom role ARN is responsible for setting
